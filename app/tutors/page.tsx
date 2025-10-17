@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import TutorAvailability from '../../components/TutorAvailability';
 import { AvailabilitySlot, generateFallbackSlots, normalizeAvailabilitySlot } from '../../lib/availability';
 import Toast from '../../components/Toast';
@@ -32,7 +33,7 @@ function extractTopCourses(courses: string[] | null | undefined) {
   return courses.slice(0, 3).join(', ');
 }
 
-export default function TutorsPage() {
+function TutorsPageInner() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,15 +75,13 @@ export default function TutorsPage() {
           setSlots(normalisedSlots);
         }
 
-        if (!selectedTutorId && tutorList.length > 0) {
-          setSelectedTutorId(tutorList[0].id);
-        }
+        setSelectedTutorId(prev => prev ?? (tutorList[0]?.id ?? null));
       } catch (err: unknown) {
         if (!active) return;
         console.error('Tutor directory load failed:', err);
-  setError('We had trouble loading tutors. Refresh the page or try again soon.');
-  setTutors([]);
-  setSlots(generateFallbackSlots([]));
+        setError('We had trouble loading tutors. Refresh the page or try again soon.');
+        setTutors([]);
+        setSlots(generateFallbackSlots([]));
       } finally {
         if (active) setLoading(false);
       }
@@ -189,8 +188,8 @@ export default function TutorsPage() {
             Explore tutors by program, browse their availability, and lock a slot without endless chats. Every profile is verified with a university email before it appears here.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
-            <a href="/request/new" className="btn">Post a request</a>
-            <a href="/dashboard" className="btn-ghost">Open dashboard</a>
+            <Link href="/request/new" className="btn">Post a request</Link>
+            <Link href="/dashboard" className="btn-ghost">Open dashboard</Link>
           </div>
         </div>
         <div className="rounded-3xl border border-[var(--border)]/60 bg-white/[0.04] p-5">
@@ -338,5 +337,13 @@ export default function TutorsPage() {
 
       {toast && <Toast message={toast.msg} type={toast.type} />}
     </div>
+  );
+}
+
+export default function TutorsPage() {
+  return (
+    <Suspense fallback={<div className="container py-16 text-center text-white/60">Loading tutors…</div>}>
+      <TutorsPageInner />
+    </Suspense>
   );
 }

@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -6,8 +7,8 @@ export default function NotFound() {
       <h1 className="text-4xl font-semibold">Page not found</h1>
       <p className="text-[color:var(--muted)]">The page you are looking for doesn’t exist.</p>
       <div className="flex gap-3 justify-center">
-        <a href="/" className="btn-ghost">Go home</a>
-        <a href="/dashboard" className="btn">Open dashboard</a>
+        <Link href="/" className="btn-ghost">Go home</Link>
+        <Link href="/dashboard" className="btn">Open dashboard</Link>
       </div>
     </div>
   );

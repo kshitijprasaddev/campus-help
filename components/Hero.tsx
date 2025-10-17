@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 
@@ -137,14 +138,14 @@ export function Hero({ loggedIn }: HeroProps) {
                 </p>
                 {loggedIn ? (
                   <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
-                    <a href="/dashboard" className="btn text-sm md:text-base">Go to dashboard</a>
-                    <a href="/request/new" className="btn-ghost text-sm md:text-base">Post a request</a>
+                    <Link href="/dashboard" className="btn text-sm md:text-base">Go to dashboard</Link>
+                    <Link href="/request/new" className="btn-ghost text-sm md:text-base">Post a request</Link>
                     <span className="text-[10px] uppercase tracking-[0.32em] text-white/38">Signed in with your uni email.</span>
                   </div>
                 ) : (
                   <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
-                    <a href="/signup" className="btn text-sm md:text-base">Create your account</a>
-                    <a href="/signin" className="btn-ghost text-sm md:text-base">I already have access</a>
+                    <Link href="/signup" className="btn text-sm md:text-base">Create your account</Link>
+                    <Link href="/signin" className="btn-ghost text-sm md:text-base">I already have access</Link>
                     <span className="text-[10px] uppercase tracking-[0.32em] text-white/38">Uni email required · no spam</span>
                   </div>
                 )}

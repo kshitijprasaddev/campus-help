@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
@@ -40,8 +41,12 @@ export default function NavBar() {
       const user = data.user;
       setEmail(user?.email ?? null);
       if (user) {
-        const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
-        setDisplayName((profile as any)?.full_name || user.email || null);
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .maybeSingle<{ full_name: string | null }>();
+        setDisplayName(profile?.full_name ?? user.email ?? null);
       } else {
         setDisplayName(null);
       }
@@ -79,7 +84,7 @@ export default function NavBar() {
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-all ${scrolled ? 'backdrop-blur-xl bg-[rgba(5,8,14,0.88)] border-b border-[var(--border)]/60 shadow-[0_18px_60px_-40px_rgba(0,0,0,0.65)]' : 'bg-transparent'}`}>
       <div className="container flex h-[68px] items-center justify-between gap-4">
-        <a href="/" className="group flex items-center gap-2 font-semibold tracking-tight">
+        <Link href="/" className="group flex items-center gap-2 font-semibold tracking-tight">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--primary)]/12 text-[var(--primary)] ring-1 ring-[var(--primary)]/30 transition-transform group-hover:scale-105">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
               <path d="M4 9.5L12 4L20 9.5V19.5C20 20.0523 19.5523 20.5 19 20.5H5C4.44772 20.5 4 20.0523 4 19.5V9.5Z" stroke="currentColor" strokeWidth="1.4" />
@@ -87,17 +92,17 @@ export default function NavBar() {
             </svg>
           </span>
           <span>Campus Help</span>
-        </a>
+        </Link>
 
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
           {filteredLinks.map(link => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className={`nav-link ${isActive(link.href) ? 'bg-white/10 text-white border border-[var(--border)]/50' : 'text-white/75'}`}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -108,8 +113,8 @@ export default function NavBar() {
             <button onClick={signOut} className="nav-link text-white/80 border border-[var(--border)]/70 bg-white/5">Sign out</button>
           ) : (
             <>
-              <a href="/signin" className="nav-link text-white/80 border border-[var(--border)]/70">Sign in</a>
-              <a href="/signup" className="btn text-sm">Join now</a>
+              <Link href="/signin" className="nav-link text-white/80 border border-[var(--border)]/70">Sign in</Link>
+              <Link href="/signup" className="btn text-sm">Join now</Link>
             </>
           )}
         </div>
@@ -134,13 +139,13 @@ export default function NavBar() {
           <div className="container py-4 space-y-3 anim-slide-down">
             <nav className="grid gap-2 text-sm">
               {filteredLinks.map(link => (
-                <a
+                <Link
                   key={link.href}
                   href={link.href}
                   className={`nav-link justify-start ${isActive(link.href) ? 'bg-white/10 text-white border border-[var(--border)]/50' : 'text-white/75 border border-transparent'}`}
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </nav>
             <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -152,8 +157,8 @@ export default function NavBar() {
                 <button onClick={signOut} className="btn-ghost">Sign out</button>
               ) : (
                 <>
-                  <a href="/signin" className="btn-ghost">Sign in</a>
-                  <a href="/signup" className="btn">Create free account</a>
+                  <Link href="/signin" className="btn-ghost">Sign in</Link>
+                  <Link href="/signup" className="btn">Create free account</Link>
                 </>
               )}
             </div>

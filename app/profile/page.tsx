@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import RoleToggle from '../../components/RoleToggle';
 import Toast from '../../components/Toast';
 import { AvailabilitySlot, normalizeAvailabilitySlot } from '../../lib/availability';
@@ -77,14 +77,6 @@ export default function Profile() {
   }, [profileSummary]);
 
   useEffect(() => {
-    if (!userId || role !== 'tutor') {
-      setSlots([]);
-      return;
-    }
-    void refreshSlots();
-  }, [role, userId]);
-
-  useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(null), 2600);
     return () => clearTimeout(timer);
@@ -98,11 +90,11 @@ export default function Profile() {
     return Math.round((filled / fields.length) * 100);
   }, [form.full_name, form.program, form.year, form.contact, form.courses, form.rate_cents, role]);
 
-  function showToast(message: string, type: 'success' | 'error' = 'success') {
+  const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
-  }
+  }, []);
 
-  async function refreshSlots() {
+  const refreshSlots = useCallback(async () => {
     if (!userId) return;
     setSlotsLoading(true);
     try {
@@ -122,7 +114,15 @@ export default function Profile() {
     } finally {
       setSlotsLoading(false);
     }
-  }
+  }, [showToast, userId]);
+
+  useEffect(() => {
+    if (!userId || role !== 'tutor') {
+      setSlots([]);
+      return;
+    }
+    void refreshSlots();
+  }, [role, userId, refreshSlots]);
 
   async function syncTutorDirectory(courseList: string[] | null, rateCents: number | null) {
     if (!userId) return;

@@ -1,5 +1,6 @@
 'use client';
 // app/signin/page.tsx
+import Link from 'next/link';
 import { useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import Toast from '../../components/Toast';
@@ -34,8 +35,9 @@ export default function SignIn() {
       if (error) throw error;
       setToast({ msg: 'Signed in', type: 'success' });
       setTimeout(()=>{ location.href = '/dashboard'; }, 400);
-    } catch (e: any) {
-      setToast({ msg: mapErrorMessage(e?.message), type: 'error' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : undefined;
+      setToast({ msg: mapErrorMessage(message), type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -63,7 +65,7 @@ export default function SignIn() {
       >
         {loading ? 'Signing in…' : 'Sign in'}
       </button>
-      <div className="text-xs text-[color:var(--muted)]">New here? <a className="underline" href="/signup">Create an account</a></div>
+  <div className="text-xs text-[color:var(--muted)]">New here? <Link className="underline" href="/signup">Create an account</Link></div>
       {toast && <Toast message={toast.msg} type={toast.type} />}
     </form>
   );

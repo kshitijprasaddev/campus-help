@@ -1,5 +1,6 @@
 'use client';
 // app/signup/page.tsx
+import Link from 'next/link';
 import { useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import Toast from '../../components/Toast';
@@ -34,8 +35,9 @@ export default function SignUp() {
       const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined } });
       if (error) throw error;
       setToast({ msg: 'Account created. Check your inbox to confirm.', type: 'success' });
-    } catch (e: any) {
-      setToast({ msg: mapErrorMessage(e?.message), type: 'error' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : undefined;
+      setToast({ msg: mapErrorMessage(message), type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -51,7 +53,7 @@ export default function SignUp() {
       <input type="password" className="input" placeholder="Password (min 8 chars)" value={password} onChange={e=>setPassword(e.target.value)} />
       {msg && <p className="text-sm text-red-500">{msg}</p>}
       <button className={`btn ${loading ? '!bg-gray-400 cursor-not-allowed' : ''}`} onClick={signUp} disabled={loading}>{loading ? 'Creating…' : 'Create account'}</button>
-      <div className="text-xs text-[color:var(--muted)]">Already have an account? <a className="underline" href="/signin">Sign in</a></div>
+  <div className="text-xs text-[color:var(--muted)]">Already have an account? <Link className="underline" href="/signin">Sign in</Link></div>
       {toast && <Toast message={toast.msg} type={toast.type} />}
     </div>
   );

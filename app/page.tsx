@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import FeatureCards from '../components/FeatureCards';
 import Hero from '../components/Hero';
@@ -118,7 +119,7 @@ export default function Home() {
             <p className="text-sm text-white/70">Filter instantly without leaving your session. Tutors see only open learner requests.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            {!isTutor && <a href="/request/new" className="btn-ghost">Create request</a>}
+            {!isTutor && <Link href="/request/new" className="btn-ghost">Create request</Link>}
           </div>
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
@@ -207,13 +208,13 @@ export default function Home() {
           <div className="flex flex-col gap-3 md:min-w-[220px]">
             {hasSession ? (
               <>
-                {!isTutor && <a href="/request/new" className="btn">Post another request</a>}
-                <a href="/dashboard" className="btn-ghost">Open dashboard</a>
+                {!isTutor && <Link href="/request/new" className="btn">Post another request</Link>}
+                <Link href="/dashboard" className="btn-ghost">Open dashboard</Link>
               </>
             ) : (
               <>
-                <a href="/signup" className="btn">Create free account</a>
-                <a href="/signin" className="btn-ghost">I already have an account</a>
+                <Link href="/signup" className="btn">Create free account</Link>
+                <Link href="/signin" className="btn-ghost">I already have an account</Link>
               </>
             )}
           </div>

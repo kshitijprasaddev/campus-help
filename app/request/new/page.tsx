@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Toast from '../../../components/Toast';
@@ -30,7 +30,7 @@ function clampBudget(value: number) {
   return Math.min(Math.max(value, MIN_BUDGET), MAX_BUDGET);
 }
 
-export default function NewRequest() {
+function NewRequestInner() {
   const [userId, setUserId] = useState<string>('');
   const [programs, setPrograms] = useState<ProgramItem[]>([]);
   const [loadingPrograms, setLoadingPrograms] = useState<boolean>(true);
@@ -166,11 +166,12 @@ export default function NewRequest() {
       if (e) throw e;
       setRedirectTarget(inserted?.id ?? null);
       setSuccessOverlay(true);
-    } catch (e: any) {
-      console.error('Request creation failed:', e);
-      const message = typeof e?.message === 'string' && e.message.toLowerCase().includes('failed to fetch')
+    } catch (error: unknown) {
+      console.error('Request creation failed:', error);
+      const errorMessage = error instanceof Error ? error.message : '';
+      const message = errorMessage.toLowerCase().includes('failed to fetch')
         ? 'Could not reach Supabase. Double-check your connection and refresh.'
-        : (e?.message || 'Failed to post. Check fields and try again.');
+        : (errorMessage || 'Failed to post. Check fields and try again.');
       setToast({ msg: message, type: 'error' });
     } finally {
       setSaving(false);
@@ -321,5 +322,13 @@ export default function NewRequest() {
 
       {toast && <Toast message={toast.msg} type={toast.type} />}
     </div>
+  );
+}
+
+export default function NewRequest() {
+  return (
+    <Suspense fallback={<div className="container py-16 text-center text-white/60">Preparing form…</div>}>
+      <NewRequestInner />
+    </Suspense>
   );
 }

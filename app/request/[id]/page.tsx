@@ -1,6 +1,6 @@
 // app/request/[id]/page.tsx
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '../../../lib/supabaseClient';
 import Toast from '../../../components/Toast';
@@ -9,11 +9,39 @@ type Reply = { id: string; helper_id: string; message: string; created_at: strin
 type Bid = { id: string; helper_id: string; amount_cents: number; message: string | null; created_at: string; helper_name: string | null };
 
 type ReportDraft = { open: boolean; type: 'request'|'reply'; targetId: string; reason: string };
+type RequestRecord = {
+  id: string;
+  title: string;
+  course: string;
+  description: string;
+  budget_cents: number | null;
+  mode: 'online' | 'in-person' | null;
+  status: 'open' | 'closed' | string;
+  author_id: string;
+  created_at: string;
+};
+
+type ReplyRow = {
+  id: string;
+  helper_id: string;
+  message: string;
+  created_at: string;
+  profiles: { full_name: string | null } | { full_name: string | null }[] | null;
+};
+
+type BidRow = {
+  id: string;
+  helper_id: string;
+  amount_cents: number;
+  message: string | null;
+  created_at: string;
+  profiles: { full_name: string | null } | { full_name: string | null }[] | null;
+};
 
 export default function RequestDetail() {
   const params = useParams<{ id: string }>();
   const id = params.id;
-  const [req, setReq] = useState<any>(null);
+  const [req, setReq] = useState<RequestRecord | null>(null);
   const [replies, setReplies] = useState<Reply[]>([]);
   const [replyText, setReplyText] = useState('');
   const [bids, setBids] = useState<Bid[]>([]);
@@ -25,18 +53,35 @@ export default function RequestDetail() {
   const [toast, setToast] = useState<{ msg: string; type: 'success'|'error' } | null>(null);
   const [report, setReport] = useState<ReportDraft>({ open: false, type: 'request', targetId: '', reason: '' });
 
-  async function refresh() {
-    const { data: r, error: er } = await supabase.from('requests').select('*').eq('id', id).single();
-    if (er) setToast({ msg: er.message, type: 'error' });
-    setReq(r || null);
-    const { data: reps, error: er2 } = await supabase
+  const refresh = useCallback(async () => {
+    if (!id) return;
+
+    const { data: requestData, error: requestError } = await supabase
+      .from('requests')
+      .select('*')
+      .eq('id', id)
+      .single<RequestRecord>();
+
+    if (requestError) {
+      setToast({ msg: requestError.message, type: 'error' });
+      setReq(null);
+    } else {
+      setReq(requestData ?? null);
+    }
+
+    const { data: reps, error: repliesError } = await supabase
       .from('replies')
       .select('id,helper_id,message,created_at,profiles(full_name)')
       .eq('request_id', id)
       .order('created_at', { ascending: false });
-    if (er2) setToast({ msg: er2.message, type: 'error' });
-    const normalisedReplies: Reply[] = (reps || []).map((entry: any) => {
-      const profile = entry?.profiles;
+
+    if (repliesError) {
+      setToast({ msg: repliesError.message, type: 'error' });
+    }
+
+    const replyRows = (reps ?? []) as ReplyRow[];
+    const normalisedReplies: Reply[] = replyRows.map(entry => {
+      const profile = entry.profiles;
       const helperName = Array.isArray(profile) ? profile[0]?.full_name ?? null : profile?.full_name ?? null;
       return {
         id: entry.id,
@@ -58,8 +103,10 @@ export default function RequestDetail() {
         : bidsError.message;
       setToast({ msg: friendly, type: 'error' });
     }
-    const normalisedBids: Bid[] = (bidsData || []).map((entry: any) => {
-      const profile = entry?.profiles;
+
+    const bidRows = (bidsData ?? []) as BidRow[];
+    const normalisedBids: Bid[] = bidRows.map(entry => {
+      const profile = entry.profiles;
       const helperName = Array.isArray(profile) ? profile[0]?.full_name ?? null : profile?.full_name ?? null;
       return {
         id: entry.id,
@@ -71,15 +118,24 @@ export default function RequestDetail() {
       };
     });
     setBids(normalisedBids);
-  }
+  }, [id]);
 
   useEffect(() => {
-    (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      setUserId(u.user?.id || '');
+    let active = true;
+
+    const bootstrap = async () => {
+      const { data: authData } = await supabase.auth.getUser();
+      if (!active) return;
+      setUserId(authData.user?.id || '');
+      if (!active) return;
       await refresh();
-    })();
-  }, [id]);
+    };
+
+    void bootstrap();
+    return () => {
+      active = false;
+    };
+  }, [refresh]);
 
   async function postReply() {
     const { data: u } = await supabase.auth.getUser();
@@ -100,8 +156,9 @@ export default function RequestDetail() {
       if (error) throw error;
       setToast({ msg: `Request ${status}`, type: 'success' });
       await refresh();
-    } catch (e: any) {
-      setToast({ msg: e?.message || 'Failed to update status', type: 'error' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to update status';
+      setToast({ msg: message || 'Failed to update status', type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -116,10 +173,11 @@ export default function RequestDetail() {
       if (error) throw error;
       setToast({ msg: 'Request deleted', type: 'success' });
       setTimeout(() => { location.href = '/dashboard'; }, 600);
-    } catch (e: any) {
-      const message = typeof e?.message === 'string' && e.message.includes('violates row-level security')
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '';
+      const message = errorMessage.includes('violates row-level security')
         ? 'Supabase RLS is blocking deletes. Ensure the "requests delete own" policy from supabase/schema.sql is applied.'
-        : e?.message || 'Failed to delete request';
+        : (errorMessage || 'Failed to delete request');
       setToast({ msg: message, type: 'error' });
     } finally {
       setSaving(false);
@@ -157,8 +215,9 @@ export default function RequestDetail() {
       setBidAmount('');
       setBidMessage('');
       await refresh();
-    } catch (e: any) {
-      setToast({ msg: e?.message || 'Failed to submit bid', type: 'error' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to submit bid';
+      setToast({ msg: message || 'Failed to submit bid', type: 'error' });
     } finally {
       setBidSaving(false);
     }
@@ -174,8 +233,9 @@ export default function RequestDetail() {
       const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!res.ok) throw new Error('Failed to report.');
       setToast({ msg: 'Reported', type: 'success' });
-    } catch (e: any) {
-      setToast({ msg: e?.message || 'Failed to report', type: 'error' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to report';
+      setToast({ msg: message || 'Failed to report', type: 'error' });
     } finally {
       setReport({ open: false, type: 'request', targetId: '', reason: '' });
     }

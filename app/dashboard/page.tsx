@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -75,9 +76,9 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="mt-6 flex flex-wrap gap-3 text-sm">
-            <a className="btn" href="/request/new">Post a request</a>
-            <a className="btn-ghost" href="/my">My items</a>
-            <a className="btn-ghost" href="/tutors">Browse tutors</a>
+            <Link className="btn" href="/request/new">Post a request</Link>
+            <Link className="btn-ghost" href="/my">My items</Link>
+            <Link className="btn-ghost" href="/tutors">Browse tutors</Link>
           </div>
         </div>
 
@@ -87,7 +88,7 @@ export default function DashboardPage() {
               <div className="tag">Snapshot</div>
               <h2 className="mt-2 text-lg font-semibold text-white">Request performance</h2>
             </div>
-            <a href="/request/new" className="btn-ghost text-xs">Create new</a>
+            <Link href="/request/new" className="btn-ghost text-xs">Create new</Link>
           </div>
           <div className="mt-6 grid gap-4">
             <div className="rounded-2xl border border-[var(--border)]/60 bg-white/5 px-5 py-4">
@@ -105,7 +106,7 @@ export default function DashboardPage() {
       <div className="space-y-4">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <h2 className="text-xl font-semibold text-white">My recent requests</h2>
-          <a href="/my" className="btn-ghost text-sm">View all activity</a>
+          <Link href="/my" className="btn-ghost text-sm">View all activity</Link>
         </div>
 
         {loading && (
@@ -131,7 +132,7 @@ export default function DashboardPage() {
         {!loading && !error && myRequests.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2">
             {myRequests.map(req => (
-              <a
+              <Link
                 key={req.id}
                 href={`/request/${req.id}`}
                 className="group rounded-2xl border border-[var(--border)]/60 bg-[rgba(12,19,38,0.78)] p-5 transition-all hover:-translate-y-1 hover:border-[var(--primary)]/40 hover:bg-[rgba(26,35,58,0.85)]"
@@ -145,7 +146,7 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <div className="mt-2 text-xs text-white/45">{new Date(req.created_at).toLocaleString()}</div>
-              </a>
+              </Link>
             ))}
           </div>
         )}
