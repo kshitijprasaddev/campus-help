@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Campus Help
 
-## Getting Started
+Next.js 15 + Supabase marketplace that lets THI students post study requests, collect tutor bids, and manage availability.
 
-First, run the development server:
+### Local setup
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app expects environment variables for the Supabase client in `.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Provision Supabase tables
 
-## Learn More
+The UI depends on a handful of tables (`profiles`, `public_profiles`, `tutor_availability`, `requests`, `replies`, `bids`). Run the statements in `supabase/schema.sql` inside the Supabase SQL editor. Every block is wrapped with `create table if not exists` so it is safe to rerun if you already created some tables. The policies in that file unlock:
 
-To learn more about Next.js, take a look at the following resources:
+- role switching + tutor directory publishing
+- request creation, updates, and deletion by the author
+- replies/bids from authenticated students with `ON DELETE CASCADE` relationships
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+If you see a toast like “Could not find the table `public.bids` in the schema cache`, it means the schema file has not been applied yet.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Useful scripts
 
-## Deploy on Vercel
+- `npm run lint` – ensure the app passes ESLint/TypeScript checks
+- `npm run dev` – run the Next.js dev server on port 3000
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Troubleshooting
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Request delete blocked by RLS: confirm the `requests delete own` policy exists (see `supabase/schema.sql`).
+- Missing bids/replies data: re-run the schema file to create the tables and indexes.
+- Availability/calendar empty: make sure `public_profiles.is_listed` is true and the `tutor_availability` table contains slots for that tutor.
