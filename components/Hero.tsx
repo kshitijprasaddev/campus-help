@@ -74,8 +74,8 @@ export function Hero({ loggedIn }: HeroProps) {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 lg:gap-6">
-                <div className="device-shell w-36 flex-1 min-w-[9rem]">
+              <div className="flex flex-col items-center gap-5 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-6 lg:justify-start">
+                <div className="device-shell w-full max-w-[230px] sm:max-w-[250px] md:max-w-[260px]">
                   <div className="device-screen">
                     <div className="device-notch" aria-hidden />
                     <div className="absolute inset-0 rounded-[22px] bg-[rgba(8,12,22,0.95)] p-4 text-white/75">
@@ -100,7 +100,7 @@ export function Hero({ loggedIn }: HeroProps) {
                   </div>
                 </div>
 
-                <div className="device-shell w-36 flex-1 min-w-[9rem]">
+                <div className="device-shell w-full max-w-[230px] sm:max-w-[250px] md:max-w-[260px]">
                   <div className="device-screen">
                     <div className="device-notch" aria-hidden />
                     <div className="absolute inset-0 rounded-[22px] bg-[rgba(6,10,20,0.96)] p-4 text-white/75">

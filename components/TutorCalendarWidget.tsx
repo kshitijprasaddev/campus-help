@@ -219,6 +219,58 @@ export default function TutorCalendarWidget() {
     [currentMonth]
   );
 
+  const renderDayButton = (day: Date, options?: { keySuffix?: string; className?: string }) => {
+    const key = formatDayKey(day);
+    const suffix = options?.keySuffix ?? "calendar";
+    const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
+    const slotsForDay = slotsByDay.get(key) ?? [];
+    const isSelected = key === selectedDayKey;
+    const hasSlots = slotsForDay.length > 0;
+    const hasEmergency = slotsForDay.some(slot => slot.isEmergency);
+    const isToday = key === todayKey;
+    const weekdayLabel = WEEKDAY_LABELS[(day.getDay() + 6) % 7];
+
+    const buttonClasses = [
+      "group relative flex min-h-[6rem] sm:min-h-[7.5rem] flex-col justify-between rounded-2xl border px-3 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-[rgba(8,12,22,0.95)]",
+      isSelected
+        ? "border-[var(--primary)]/70 bg-[rgba(12,26,48,0.95)] shadow-[0_30px_120px_-80px_rgba(30,120,255,0.75)]"
+        : hasSlots
+        ? "border-[var(--border)]/60 bg-white/[0.07] hover:border-[var(--primary)]/50 hover:bg-white/[0.12]"
+        : "border-[var(--border)]/30 bg-white/[0.02] hover:border-[var(--primary)]/40 hover:bg-white/[0.06]",
+      isCurrentMonth ? "text-white" : "text-white/35",
+      options?.className ?? "",
+    ].join(" ");
+
+    return (
+      <button
+        key={`${key}-${suffix}`}
+        type="button"
+        onClick={() => handleSelectDay(key)}
+        className={buttonClasses}
+      >
+        <div className="flex items-start justify-between">
+          <div>
+            <span className={`block text-lg leading-none ${isToday ? "font-semibold text-white" : ""}`}>{day.getDate()}</span>
+            <span className="mt-2 block text-[11px] uppercase tracking-[0.32em] text-white/35">{weekdayLabel}</span>
+          </div>
+          <div className="flex flex-col items-end gap-1 text-[10px] uppercase tracking-[0.3em]">
+            {isToday && (
+              <span className="rounded-full bg-[var(--primary)]/20 px-2 py-0.5 text-[var(--primary)]">
+                Today
+              </span>
+            )}
+            {hasEmergency && (
+              <span className="rounded-full bg-[#f87171]/22 px-2 py-0.5 text-[#fecaca]">Rush</span>
+            )}
+          </div>
+        </div>
+        <div className={`text-[11px] ${hasSlots ? "text-white/70" : "text-white/35"}`}>
+          {hasSlots ? `${slotsForDay.length} ${slotsForDay.length === 1 ? "slot" : "slots"}` : "No slots"}
+        </div>
+      </button>
+    );
+  };
+
   function goToAdjacentMonth(delta: number) {
     setCurrentMonth(prev => {
       const next = new Date(prev);
@@ -311,56 +363,16 @@ export default function TutorCalendarWidget() {
               )}
 
               <div className="mt-6 space-y-3">
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {calendarDays.map(day => {
-                    const key = formatDayKey(day);
-                    const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
-                    const slotsForDay = slotsByDay.get(key) ?? [];
-                    const isSelected = key === selectedDayKey;
-                    const hasSlots = slotsForDay.length > 0;
-                    const hasEmergency = slotsForDay.some(slot => slot.isEmergency);
-                    const isToday = key === todayKey;
-                    const weekdayLabel = WEEKDAY_LABELS[(day.getDay() + 6) % 7];
-
-                    const buttonClasses = [
-                      "group relative flex min-h-[7.5rem] flex-col justify-between rounded-2xl border px-3 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-[rgba(8,12,22,0.95)]",
-                      isSelected
-                        ? "border-[var(--primary)]/70 bg-[rgba(12,26,48,0.95)] shadow-[0_30px_120px_-80px_rgba(30,120,255,0.75)]"
-                        : hasSlots
-                        ? "border-[var(--border)]/60 bg-white/[0.07] hover:border-[var(--primary)]/50 hover:bg-white/[0.12]"
-                        : "border-[var(--border)]/30 bg-white/[0.02] hover:border-[var(--primary)]/40 hover:bg-white/[0.06]",
-                      isCurrentMonth ? "text-white" : "text-white/35",
-                    ].join(" ");
-
-                    return (
-                      <button
-                        key={`${key}-${day.getMonth()}`}
-                        type="button"
-                        onClick={() => handleSelectDay(key)}
-                        className={buttonClasses}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <span className={`block text-lg leading-none ${isToday ? "font-semibold text-white" : ""}`}>{day.getDate()}</span>
-                            <span className="mt-2 block text-[11px] uppercase tracking-[0.32em] text-white/35">{weekdayLabel}</span>
-                          </div>
-                          <div className="flex flex-col items-end gap-1 text-[10px] uppercase tracking-[0.3em]">
-                            {isToday && (
-                              <span className="rounded-full bg-[var(--primary)]/20 px-2 py-0.5 text-[var(--primary)]">
-                                Today
-                              </span>
-                            )}
-                            {hasEmergency && (
-                              <span className="rounded-full bg-[#f87171]/22 px-2 py-0.5 text-[#fecaca]">Rush</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className={`text-[11px] ${hasSlots ? "text-white/70" : "text-white/35"}`}>
-                          {hasSlots ? `${slotsForDay.length} ${slotsForDay.length === 1 ? "slot" : "slots"}` : "No slots"}
-                        </div>
-                      </button>
-                    );
-                  })}
+                <div className="flex gap-3 overflow-x-auto pb-2 sm:hidden snap-x snap-mandatory">
+                  {calendarDays.map(day =>
+                    renderDayButton(day, {
+                      keySuffix: "scroll",
+                      className: "min-h-[5.2rem] w-[5.75rem] flex-shrink-0 snap-start",
+                    })
+                  )}
+                </div>
+                <div className="hidden sm:grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {calendarDays.map(day => renderDayButton(day, { keySuffix: "grid" }))}
                 </div>
               </div>
 
@@ -387,8 +399,8 @@ export default function TutorCalendarWidget() {
                       Pick any highlighted day to see the exact times tutors opened.
                     </div>
                   ) : (
-                    <div className="relative space-y-4 pl-8">
-                      <div className="pointer-events-none absolute left-3 top-1 bottom-1 w-px bg-white/12" aria-hidden />
+                    <div className="relative space-y-4 pl-0 md:pl-8">
+                      <div className="pointer-events-none absolute left-3 top-1 bottom-1 hidden md:block w-px bg-white/12" aria-hidden />
                       {selectedSlots
                         .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
                         .map(slot => {
@@ -397,10 +409,10 @@ export default function TutorCalendarWidget() {
                           return (
                             <div
                               key={slot.id}
-                              className="relative flex flex-wrap items-start gap-4 rounded-2xl border border-[var(--border)]/60 bg-white/[0.04] p-4 text-sm text-white/80 shadow-[0_24px_90px_-80px_rgba(20,40,90,0.9)]"
+                              className="relative flex flex-col gap-4 rounded-2xl border border-[var(--border)]/60 bg-white/[0.04] p-4 text-sm text-white/80 shadow-[0_24px_90px_-80px_rgba(20,40,90,0.9)] md:flex-row md:flex-wrap md:items-start"
                             >
-                              <span className="absolute left-[-11px] top-5 inline-flex h-2.5 w-2.5 rounded-full bg-[var(--primary)] ring-4 ring-[var(--primary)]/20" aria-hidden />
-                              <div className="min-w-[96px] text-xs text-white/45">
+                              <span className="absolute left-[-11px] top-5 hidden md:inline-flex h-2.5 w-2.5 rounded-full bg-[var(--primary)] ring-4 ring-[var(--primary)]/20" aria-hidden />
+                              <div className="flex items-center gap-3 text-xs text-white/45 md:block md:min-w-[96px]">
                                 <div className="font-semibold text-white">{slotRange}</div>
                                 <div className="mt-1 uppercase tracking-[0.3em]">
                                   {slot.mode === "in-person" ? "In person" : "Online"}
@@ -423,7 +435,7 @@ export default function TutorCalendarWidget() {
                               </div>
                               <button
                                 type="button"
-                                className="btn text-sm"
+                                className="btn text-sm md:self-center"
                                 onClick={() => handleBook(slot)}
                               >
                                 Book

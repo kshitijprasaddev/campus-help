@@ -447,7 +447,7 @@ main {
   padding: 0.75rem;
   background: linear-gradient(150deg, rgba(74, 143, 255, 0.35), rgba(0, 245, 200, 0.28));
   box-shadow: 0 40px 110px -60px rgba(4, 119, 255, 0.6);
-  width: clamp(260px, 32vw, 360px);
+  width: clamp(220px, 40vw, 320px);
 }
 
 .device-shell::before,
@@ -465,6 +465,15 @@ main {
               radial-gradient(circle at 82% 32%, rgba(0,245,200,0.36), transparent 55%);
   filter: blur(25px);
   opacity: 0.8;
+}
+
+@media (max-width: 640px) {
+  .device-shell {
+    margin-inline: auto;
+    padding: 0.6rem;
+    width: min(220px, 78vw);
+    box-shadow: 0 30px 90px -70px rgba(4, 119, 255, 0.65);
+  }
 }
 
 .device-screen {
