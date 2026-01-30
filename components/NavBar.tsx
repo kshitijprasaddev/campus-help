@@ -82,16 +82,16 @@ export default function NavBar() {
   }
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all ${scrolled ? 'backdrop-blur-xl bg-[rgba(5,8,14,0.88)] border-b border-[var(--border)]/60 shadow-[0_18px_60px_-40px_rgba(0,0,0,0.65)]' : 'bg-transparent'}`}>
-      <div className="container flex h-[68px] items-center justify-between gap-4">
-        <Link href="/" className="group flex items-center gap-2 font-semibold tracking-tight">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--primary)]/12 text-[var(--primary)] ring-1 ring-[var(--primary)]/30 transition-transform group-hover:scale-105">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-              <path d="M4 9.5L12 4L20 9.5V19.5C20 20.0523 19.5523 20.5 19 20.5H5C4.44772 20.5 4 20.0523 4 19.5V9.5Z" stroke="currentColor" strokeWidth="1.4" />
-              <path d="M9 20.5V13.5H15V20.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled ? 'backdrop-blur-2xl bg-[rgba(5,8,14,0.85)] border-b border-white/5 shadow-[0_20px_80px_-40px_rgba(0,0,0,0.8)]' : 'bg-transparent'}`}>
+      <div className="container flex h-[72px] items-center justify-between gap-4">
+        <Link href="/" className="group flex items-center gap-3 font-semibold tracking-tight">
+          <span className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--primary)]/20 to-[var(--accent)]/10 text-[var(--primary)] border border-[var(--primary)]/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_-5px_var(--primary)]">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <path d="M4 9.5L12 4L20 9.5V19.5C20 20.0523 19.5523 20.5 19 20.5H5C4.44772 20.5 4 20.0523 4 19.5V9.5Z" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M9 20.5V13.5H15V20.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </span>
-          <span>Campus Help</span>
+          <span className="text-white font-bold text-lg group-hover:text-[var(--primary)] transition-colors duration-300">Campus Help</span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
@@ -99,50 +99,68 @@ export default function NavBar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`nav-link ${isActive(link.href) ? 'bg-white/10 text-white border border-[var(--border)]/50' : 'text-white/75'}`}
+              className={`relative px-4 py-2 rounded-full transition-all duration-300 ${isActive(link.href) ? 'bg-white/10 text-white border border-white/10' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
             >
               {link.label}
+              {isActive(link.href) && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--primary)]" />
+              )}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3 text-sm">
+        <div className="hidden lg:flex items-center gap-4 text-sm">
           <RoleModeSwitcher />
-          {displayName && <span className="text-white/65">Hi, {displayName.split(' ')[0]}</span>}
+          {displayName && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-[10px] font-bold text-white">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+              <span className="text-white/70 text-xs">{displayName.split(' ')[0]}</span>
+            </div>
+          )}
           {email ? (
-            <button onClick={signOut} className="nav-link text-white/80 border border-[var(--border)]/70 bg-white/5">Sign out</button>
+            <button onClick={signOut} className="px-4 py-2 rounded-full text-white/70 border border-white/10 bg-white/5 hover:bg-white/10 hover:text-white transition-all duration-300">Sign out</button>
           ) : (
             <>
-              <Link href="/signin" className="nav-link text-white/80 border border-[var(--border)]/70">Sign in</Link>
-              <Link href="/signup" className="btn text-sm">Join now</Link>
+              <Link href="/signin" className="px-4 py-2 rounded-full text-white/70 hover:text-white transition-colors duration-300">Sign in</Link>
+              <Link href="/signup" className="group relative px-5 py-2.5 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white font-semibold overflow-hidden transition-all duration-300 hover:shadow-[0_10px_40px_-10px_var(--primary)] hover:scale-105">
+                <span className="relative z-10">Join free</span>
+              </Link>
             </>
           )}
         </div>
 
         <button
           type="button"
-          className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)]/70 bg-[var(--surface)] text-white/80 transition hover:bg-white/5"
+          className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/80 transition-all duration-300 hover:bg-white/10 hover:scale-105"
           onClick={() => setMenuOpen(v => !v)}
           aria-expanded={menuOpen}
           aria-label="Toggle navigation"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-            <path d="M4 6H20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-            <path d="M4 12H20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-            <path d="M4 18H20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden className={`transition-transform duration-300 ${menuOpen ? 'rotate-90' : ''}`}>
+            {menuOpen ? (
+              <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            ) : (
+              <>
+                <path d="M4 6H20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                <path d="M4 12H20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                <path d="M4 18H20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+              </>
+            )}
           </svg>
         </button>
       </div>
 
       {menuOpen && (
-        <div className="lg:hidden border-t border-[var(--border)]/60 bg-[rgba(4,6,12,0.94)] backdrop-blur-xl">
-          <div className="container py-4 space-y-3 anim-slide-down">
+        <div className="lg:hidden border-t border-white/5 bg-[rgba(4,6,12,0.98)] backdrop-blur-2xl">
+          <div className="container py-6 space-y-4 anim-slide-down">
             <nav className="grid gap-2 text-sm">
               {filteredLinks.map(link => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`nav-link justify-start ${isActive(link.href) ? 'bg-white/10 text-white border border-[var(--border)]/50' : 'text-white/75 border border-transparent'}`}
+                  className={`px-4 py-3 rounded-xl transition-all duration-300 ${isActive(link.href) ? 'bg-white/10 text-white border border-white/10' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
                 >
                   {link.label}
                 </Link>

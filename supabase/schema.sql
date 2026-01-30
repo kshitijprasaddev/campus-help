@@ -174,3 +174,41 @@ create policy "bids update own" on public.bids
 drop policy if exists "bids delete own" on public.bids;
 create policy "bids delete own" on public.bids
   for delete using (auth.uid() = helper_id);
+
+-- Bookings ------------------------------------------------------------------
+create table if not exists public.bookings (
+  id uuid primary key default gen_random_uuid(),
+  student_id uuid not null references public.profiles(id) on delete cascade,
+  tutor_id uuid not null references public.profiles(id) on delete cascade,
+  availability_id uuid references public.tutor_availability(id) on delete set null,
+  scheduled_start timestamptz not null,
+  scheduled_end timestamptz not null,
+  mode text not null check (mode in ('online','in-person')),
+  status text not null default 'pending' check (status in ('pending','confirmed','completed','cancelled')),
+  notes text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table public.bookings enable row level security;
+
+drop policy if exists "bookings viewable by participants" on public.bookings;
+create policy "bookings viewable by participants" on public.bookings
+  for select using (auth.uid() = student_id or auth.uid() = tutor_id);
+
+drop policy if exists "bookings insert by student" on public.bookings;
+create policy "bookings insert by student" on public.bookings
+  for insert with check (auth.uid() = student_id);
+
+drop policy if exists "bookings update by participants" on public.bookings;
+create policy "bookings update by participants" on public.bookings
+  for update using (auth.uid() = student_id or auth.uid() = tutor_id);
+
+drop policy if exists "bookings delete by student" on public.bookings;
+create policy "bookings delete by student" on public.bookings
+  for delete using (auth.uid() = student_id);
+
+create index if not exists idx_bookings_student on public.bookings(student_id);
+create index if not exists idx_bookings_tutor on public.bookings(tutor_id);
+create index if not exists idx_bookings_status on public.bookings(status);
+create index if not exists idx_bookings_scheduled on public.bookings(scheduled_start);

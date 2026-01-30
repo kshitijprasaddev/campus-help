@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import FeatureCards from '../components/FeatureCards';
-import Hero from '../components/Hero';
+import FeatureCards from '../components/FeatureCardsNew';
+import AnimatedHero from '../components/AnimatedHero';
 import RequestCard from '../components/RequestCard';
 import TutorCalendarWidget from '../components/TutorCalendarWidget';
 import { supabase } from '../lib/supabaseClient';
@@ -108,8 +108,8 @@ export default function Home() {
   const hasResults = sorted.length > 0;
   const isTutor = role === 'tutor';
   return (
-    <div className="space-y-24">
-      <Hero loggedIn={hasSession} />
+    <div className="space-y-24 page-transition">
+      <AnimatedHero loggedIn={hasSession} />
       <FeatureCards />
 
       <section className="container space-y-6">

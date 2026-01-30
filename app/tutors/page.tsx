@@ -170,10 +170,56 @@ function TutorsPageInner() {
     openBooking(slot, tutor);
   }
 
-  function confirmBooking() {
+  async function confirmBooking() {
     if (!booking) return;
-    setToast({ msg: 'Session request sent! We’ll notify you once the tutor confirms.', type: 'success' });
-    setBooking(null);
+    
+    try {
+      // Check if user is logged in
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        setToast({ msg: 'Please sign in to book a session. Redirecting...', type: 'error' });
+        setBooking(null);
+        setTimeout(() => {
+          window.location.href = '/signin';
+        }, 1500);
+        return;
+      }
+
+      // Don't allow booking yourself
+      if (userData.user.id === booking.tutor.id) {
+        setToast({ msg: 'You cannot book a session with yourself!', type: 'error' });
+        setBooking(null);
+        return;
+      }
+
+      // Create the booking in the database
+      const { error: bookingError } = await supabase.from('bookings').insert({
+        student_id: userData.user.id,
+        tutor_id: booking.tutor.id,
+        availability_id: booking.slot.id.includes('-') ? null : booking.slot.id, // Handle fallback IDs
+        scheduled_start: booking.slot.start,
+        scheduled_end: booking.slot.end,
+        mode: booking.slot.mode,
+        status: 'pending',
+      });
+
+      if (bookingError) {
+        console.error('Booking failed:', bookingError);
+        // Check if it's a table not found error
+        if (bookingError.message?.includes('relation') || bookingError.code === '42P01') {
+          setToast({ msg: 'Bookings system not set up yet. Please run the schema.sql file.', type: 'error' });
+        } else {
+          setToast({ msg: 'Could not complete booking. Please try again.', type: 'error' });
+        }
+        return;
+      }
+
+      setToast({ msg: 'Session booked! The tutor will confirm shortly.', type: 'success' });
+      setBooking(null);
+    } catch (err) {
+      console.error('Booking error:', err);
+      setToast({ msg: 'Something went wrong. Please try again.', type: 'error' });
+    }
   }
 
   const selectedTutor = tutors.find(t => t.id === selectedTutorId) || null;

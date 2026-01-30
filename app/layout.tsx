@@ -1,5 +1,6 @@
 import './globals.css';
 import NavBar from '../components/NavBar';
+import Footer from '../components/Footer';
 import ClientOnly from '../components/ClientOnly';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
@@ -20,9 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <ClientOnly><AuthGate /></ClientOnly>
             <ClientOnly><NavBar /></ClientOnly>
             <main className="flex-1 pt-24 pb-20">{children}</main>
-            <footer className="relative z-10 border-t border-[var(--border)]/60 py-8 text-center text-xs text-[color:var(--muted)]">
-              © {new Date().getFullYear()} Campus Help. Built by students, for students.
-            </footer>
+            <ClientOnly><Footer /></ClientOnly>
           </div>
         </RoleThemeProvider>
       </body>
