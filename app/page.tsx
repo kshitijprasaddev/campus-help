@@ -2,9 +2,9 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import FeatureCards from '../components/FeatureCardsNew';
-import SophisticatedHero from '../components/SophisticatedHero';
+import CleanHero from '../components/CleanHero';
 import RequestCard from '../components/RequestCard';
-import ProfessionalCalendar from '../components/ProfessionalCalendar';
+import SimpleCalendar from '../components/SimpleCalendar';
 import { supabase } from '../lib/supabaseClient';
 import { useRoleTheme } from '../components/RoleThemeProvider';
 
@@ -109,10 +109,10 @@ export default function Home() {
   const isTutor = role === 'tutor';
   return (
     <div className="page-transition">
-      <SophisticatedHero loggedIn={hasSession} />
+      <CleanHero loggedIn={hasSession} />
       <FeatureCards />
       
-      <ProfessionalCalendar />
+      <SimpleCalendar />
 
       <section className="container space-y-6 py-16">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

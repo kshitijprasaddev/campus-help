@@ -18,6 +18,7 @@
   --card: #ffffff;
   --text: #1e293b;
   --text-muted: #64748b;
+  --muted: #64748b;
   --primary: #003366;
   --primary-light: #0052a5;
   --accent: #0077cc;
@@ -36,6 +37,7 @@ html.dark {
   --card: #1e293b;
   --text: #f1f5f9;
   --text-muted: #94a3b8;
+  --muted: #94a3b8;
   --primary: #60a5fa;
   --primary-light: #93c5fd;
   --accent: #3b82f6;
