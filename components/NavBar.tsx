@@ -3,26 +3,20 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
-import RoleModeSwitcher from './RoleModeSwitcher';
 import ThemeToggle from './ThemeToggle';
-import { useRoleTheme } from './RoleThemeProvider';
 
-type Role = 'learner' | 'tutor';
-
-type NavigationLink = { href: string; label: string; auth?: 'protected' | 'public'; roles?: Role[] };
+type NavigationLink = { href: string; label: string; auth?: 'protected' | 'public' };
 
 const NAV_LINKS: NavigationLink[] = [
-  { href: '/programs', label: 'Programs' },
   { href: '/tutors', label: 'Tutors' },
-  { href: '/request/new', label: 'Post', auth: 'protected', roles: ['learner'] },
+  { href: '/request/new', label: 'Post Request', auth: 'protected' },
   { href: '/dashboard', label: 'Dashboard', auth: 'protected' },
-  { href: '/my', label: 'My items', auth: 'protected' },
+  { href: '/my', label: 'My Items', auth: 'protected' },
   { href: '/profile', label: 'Profile', auth: 'protected' },
 ];
 
 export default function NavBar() {
   const pathname = usePathname();
-  const { role } = useRoleTheme();
   const [email, setEmail] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -68,13 +62,12 @@ export default function NavBar() {
 
   const filteredLinks = useMemo(() => {
     return NAV_LINKS.filter(link => {
-      if (link.roles && role && !link.roles.includes(role)) return false;
       if (!link.auth) return true;
       if (link.auth === 'protected') return !!email;
       if (link.auth === 'public') return !email;
       return true;
     });
-  }, [email, role]);
+  }, [email]);
 
   function isActive(href: string) {
     if (href === '/') return pathname === '/';
@@ -82,16 +75,16 @@ export default function NavBar() {
   }
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--bg)]/90 backdrop-blur-xl border-b border-[var(--border)] shadow-sm' : 'bg-transparent'}`}>
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--bg)]/95 backdrop-blur-xl border-b border-[var(--border)] shadow-sm' : 'bg-transparent'}`}>
       <div className="container flex h-[72px] items-center justify-between gap-4">
         <Link href="/" className="group flex items-center gap-3 font-semibold tracking-tight">
-          <span className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl bg-thi-blue/10 dark:bg-[var(--primary)]/20 text-thi-blue dark:text-[var(--primary)] border border-thi-blue/20 dark:border-[var(--primary)]/20 transition-all duration-300 group-hover:scale-110">
+          <span className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl bg-thi-blue dark:bg-[var(--primary)] text-white transition-all duration-300 group-hover:scale-110">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path d="M4 9.5L12 4L20 9.5V19.5C20 20.0523 19.5523 20.5 19 20.5H5C4.44772 20.5 4 20.0523 4 19.5V9.5Z" stroke="currentColor" strokeWidth="1.6" />
               <path d="M9 20.5V13.5H15V20.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </span>
-          <span className="font-bold text-lg transition-colors duration-300">Campus Help</span>
+          <span className="font-bold text-lg">Campus Help</span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
@@ -99,7 +92,7 @@ export default function NavBar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`nav-link ${isActive(link.href) ? 'active' : ''}`}
+              className={`px-4 py-2 rounded-lg transition-colors ${isActive(link.href) ? 'bg-thi-blue/10 dark:bg-[var(--primary)]/10 text-thi-blue dark:text-[var(--primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-secondary)]'}`}
             >
               {link.label}
             </Link>
@@ -108,13 +101,12 @@ export default function NavBar() {
 
         <div className="hidden lg:flex items-center gap-3 text-sm">
           <ThemeToggle />
-          {email && <RoleModeSwitcher />}
           {displayName && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)]">
               <div className="w-6 h-6 rounded-full bg-thi-blue dark:bg-[var(--primary)] flex items-center justify-center text-[10px] font-bold text-white">
                 {displayName.charAt(0).toUpperCase()}
               </div>
-              <span className="text-[var(--text-muted)] text-xs">{displayName.split(' ')[0]}</span>
+              <span className="text-[var(--text-muted)] text-xs max-w-[100px] truncate">{displayName.split(' ')[0]}</span>
             </div>
           )}
           {email ? (
@@ -129,7 +121,7 @@ export default function NavBar() {
 
         <button
           type="button"
-          className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] transition-all"
+          className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] transition-all"
           onClick={() => setMenuOpen(v => !v)}
           aria-expanded={menuOpen}
           aria-label="Toggle navigation"
@@ -156,16 +148,15 @@ export default function NavBar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`nav-link ${isActive(link.href) ? 'active' : ''}`}
+                  className={`px-4 py-3 rounded-lg transition-colors ${isActive(link.href) ? 'bg-thi-blue/10 dark:bg-[var(--primary)]/10 text-thi-blue dark:text-[var(--primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-secondary)]'}`}
                 >
                   {link.label}
                 </Link>
               ))}
             </nav>
-            <div className="flex flex-wrap items-center gap-3 text-sm">
+            <div className="flex items-center gap-3">
               <ThemeToggle />
-              {email && <RoleModeSwitcher />}
-              {displayName && <span className="text-[var(--text-muted)]">Hi, {displayName}</span>}
+              {displayName && <span className="text-[var(--text-muted)] text-sm">Hi, {displayName.split(' ')[0]}</span>}
             </div>
             <div className="flex flex-col gap-2">
               {email ? (

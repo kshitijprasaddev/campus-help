@@ -9,10 +9,12 @@ type AnimatedHeroProps = {
 
 export default function AnimatedHero({ loggedIn }: AnimatedHeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mounted, setMounted] = useState(false);
   const [currentWord, setCurrentWord] = useState(0);
+  const mousePos = useRef({ x: -1000, y: -1000 });
   
-  const words = ['tutor', 'mentor', 'study buddy', 'expert'];
+  const words = ['tutor', 'mentor', 'study partner', 'expert'];
 
   useEffect(() => {
     setMounted(true);
@@ -25,140 +27,227 @@ export default function AnimatedHero({ loggedIn }: AnimatedHeroProps) {
     return () => clearInterval(interval);
   }, [words.length]);
 
+  // Subtle grid that appears near cursor
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationId: number;
+    const dpr = window.devicePixelRatio || 1;
+    
+    const resize = () => {
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.scale(dpr, dpr);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    const handleMouseLeave = () => {
+      mousePos.current = { x: -1000, y: -1000 };
+    };
+    window.addEventListener('mouseleave', handleMouseLeave);
+
+    // Professional formulas and code snippets to show subtly
+    const codeSnippets = [
+      'f(x) = ∫ dx',
+      'O(n log n)',
+      'λx.x',
+      '∂y/∂x',
+      'Σ(n)',
+      'async/await',
+      'SELECT *',
+      '∇f',
+      'P(A|B)',
+      'e^iπ + 1',
+    ];
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      text: string;
+      alpha: number;
+      size: number;
+    }> = [];
+
+    // Create sparse particles with code/math
+    const spacing = 200;
+    for (let x = 0; x < window.innerWidth; x += spacing) {
+      for (let y = 0; y < window.innerHeight; y += spacing) {
+        particles.push({
+          x: x + Math.random() * 100 - 50,
+          y: y + Math.random() * 100 - 50,
+          text: codeSnippets[Math.floor(Math.random() * codeSnippets.length)],
+          alpha: 0,
+          size: 10 + Math.random() * 4,
+        });
+      }
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      
+      const isDark = document.documentElement.classList.contains('dark');
+      const textColor = isDark ? '255, 255, 255' : '0, 51, 102';
+      
+      particles.forEach(p => {
+        const dx = mousePos.current.x - p.x;
+        const dy = mousePos.current.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        // Only show within 250px of cursor
+        const targetAlpha = dist < 250 ? Math.max(0, 0.15 * (1 - dist / 250)) : 0;
+        p.alpha += (targetAlpha - p.alpha) * 0.08;
+        
+        if (p.alpha > 0.01) {
+          ctx.font = `${p.size}px "SF Mono", Monaco, "Cascadia Code", monospace`;
+          ctx.fillStyle = `rgba(${textColor}, ${p.alpha})`;
+          ctx.textAlign = 'center';
+          ctx.fillText(p.text, p.x, p.y);
+        }
+      });
+      
+      // Draw subtle grid lines near cursor
+      const gridSize = 60;
+      const gridRadius = 200;
+      
+      ctx.strokeStyle = `rgba(${textColor}, 0.04)`;
+      ctx.lineWidth = 1;
+      
+      for (let x = 0; x < window.innerWidth; x += gridSize) {
+        const dx = Math.abs(mousePos.current.x - x);
+        if (dx < gridRadius) {
+          const alpha = 0.08 * (1 - dx / gridRadius);
+          ctx.strokeStyle = `rgba(${textColor}, ${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, window.innerHeight);
+          ctx.stroke();
+        }
+      }
+      
+      for (let y = 0; y < window.innerHeight; y += gridSize) {
+        const dy = Math.abs(mousePos.current.y - y);
+        if (dy < gridRadius) {
+          const alpha = 0.08 * (1 - dy / gridRadius);
+          ctx.strokeStyle = `rgba(${textColor}, ${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(window.innerWidth, y);
+          ctx.stroke();
+        }
+      }
+
+      animationId = requestAnimationFrame(render);
+    };
+    
+    render();
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
   return (
     <section 
       ref={heroRef}
-      className="relative overflow-hidden py-20 md:py-32 lg:py-40"
+      className="relative overflow-hidden py-24 md:py-32 lg:py-40"
     >
+      {/* Subtle background canvas */}
+      <canvas 
+        ref={canvasRef} 
+        className="absolute inset-0 pointer-events-none"
+        style={{ opacity: 0.8 }}
+      />
+
       <div className="container relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 dark:bg-white/5 border border-thi-blue/20 backdrop-blur-sm animate-fade-in-up">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span className="text-sm font-medium text-gray-700 dark:text-white/80">Campus Help for THI Students</span>
-          </div>
-
           {/* Main Headline */}
-          <div className="space-y-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight">
+          <div className="space-y-2 animate-fade-in-up">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight">
               <span className="text-gray-900 dark:text-white">Find your perfect</span>
               <br />
-              <span className="relative inline-block min-w-[280px]">
+              <span className="relative inline-block h-[1.2em] min-w-[200px] sm:min-w-[280px] overflow-hidden">
                 <span 
                   key={currentWord}
-                  className="bg-gradient-to-r from-thi-blue via-thi-blue-light to-thi-blue bg-clip-text text-transparent animate-word-slide"
+                  className="absolute inset-0 flex items-center justify-center text-thi-blue dark:text-[var(--primary)] animate-word-slide"
                 >
                   {words[currentWord]}
                 </span>
-                <svg className="absolute -bottom-2 left-0 w-full h-4 text-thi-blue/40" viewBox="0 0 200 12" preserveAspectRatio="none">
-                  <path d="M0,8 Q50,0 100,8 T200,8" fill="none" stroke="currentColor" strokeWidth="3" className="animate-draw-line" />
-                </svg>
               </span>
-              <br />
-              <span className="text-gray-900 dark:text-white">in minutes.</span>
             </h1>
           </div>
 
           {/* Subtitle */}
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-white/60 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Connect with verified campus tutors instantly. Post a request, browse availability, and book sessions.
+          <p className="text-lg md:text-xl text-gray-600 dark:text-white/70 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            Connect with verified campus tutors instantly. Post requests, browse availability, and book sessions—all in one place.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap justify-center gap-4 pt-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <div className="flex flex-wrap justify-center gap-4 pt-4 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             {loggedIn ? (
               <>
-                <Link href="/request/new" className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-thi-blue text-white font-semibold text-lg overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(0,51,102,0.5)] hover:scale-105">
-                  <span className="relative z-10">Post a Request</span>
-                  <svg className="relative z-10 w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <Link href="/request/new" className="btn px-8 py-4 text-lg">
+                  Post a Request
+                  <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
-                  <div className="absolute inset-0 bg-thi-blue-dark opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
-                <Link href="/tutors" className="group inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-thi-blue text-thi-blue dark:text-white dark:border-white/30 font-semibold text-lg transition-all duration-300 hover:bg-thi-blue/10 dark:hover:bg-white/10 hover:scale-105">
+                <Link href="/tutors" className="btn-ghost px-8 py-4 text-lg border-2">
                   Browse Tutors
-                  <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
                 </Link>
               </>
             ) : (
               <>
-                <Link href="/signup" className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-thi-blue text-white font-semibold text-lg overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(0,51,102,0.5)] hover:scale-105">
-                  <span className="relative z-10">Get Started Free</span>
-                  <svg className="relative z-10 w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <Link href="/signup" className="btn px-8 py-4 text-lg">
+                  Get Started
+                  <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
-                  <div className="absolute inset-0 bg-thi-blue-dark opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
-                <Link href="/signin" className="group inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-thi-blue text-thi-blue dark:text-white dark:border-white/30 font-semibold text-lg transition-all duration-300 hover:bg-thi-blue/10 dark:hover:bg-white/10 hover:scale-105">
+                <Link href="/signin" className="btn-ghost px-8 py-4 text-lg border-2">
                   Sign In
-                  <svg className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
                 </Link>
               </>
             )}
           </div>
 
-          {/* Feature Pills */}
+          {/* Trust indicators - no emojis, just clean text */}
           {mounted && (
-            <div className="flex flex-wrap justify-center gap-3 pt-8 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-              {[
-                { icon: '🎓', text: 'Verified Students' },
-                { icon: '⚡', text: 'Instant Matching' },
-                { icon: '🔒', text: 'Secure Platform' },
-                { icon: '💬', text: 'Direct Chat' },
-              ].map((feature, i) => (
-                <div
-                  key={i}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/10 border border-gray-200 dark:border-white/10 text-sm text-gray-700 dark:text-white/70 backdrop-blur-sm hover:scale-105 transition-transform cursor-default"
-                >
-                  <span>{feature.icon}</span>
-                  <span>{feature.text}</span>
-                </div>
-              ))}
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 pt-8 text-sm text-gray-500 dark:text-white/50 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Verified Students Only
+              </span>
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Instant Matching
+              </span>
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Secure Platform
+              </span>
             </div>
           )}
-        </div>
-
-        {/* Floating Elements */}
-        {mounted && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[
-              { emoji: '📚', x: '10%', y: '20%', delay: 0 },
-              { emoji: '💡', x: '85%', y: '15%', delay: 0.5 },
-              { emoji: '🎯', x: '5%', y: '70%', delay: 1 },
-              { emoji: '⭐', x: '90%', y: '65%', delay: 1.5 },
-              { emoji: '🚀', x: '15%', y: '45%', delay: 2 },
-              { emoji: '✨', x: '80%', y: '40%', delay: 2.5 },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="absolute text-4xl md:text-5xl animate-float-gentle opacity-60"
-                style={{
-                  left: item.x,
-                  top: item.y,
-                  animationDelay: `${item.delay}s`,
-                }}
-              >
-                {item.emoji}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Scroll indicator */}
-        <div className="flex justify-center mt-16 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-          <div className="flex flex-col items-center gap-2 text-gray-400 dark:text-white/30 hover:text-gray-600 dark:hover:text-white/50 transition-colors cursor-pointer">
-            <span className="text-xs uppercase tracking-widest">Scroll to explore</span>
-            <div className="w-6 h-10 rounded-full border-2 border-current p-1">
-              <div className="w-1.5 h-1.5 bg-current rounded-full animate-scroll-indicator mx-auto" />
-            </div>
-          </div>
         </div>
       </div>
     </section>

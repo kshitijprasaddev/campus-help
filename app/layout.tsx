@@ -2,7 +2,6 @@ import './globals.css';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 import ClientOnly from '../components/ClientOnly';
-import ParticleMesh from '../components/ParticleMesh';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import AuthGate from '../components/AuthGate';
@@ -10,7 +9,7 @@ import { RoleThemeProvider } from '../components/RoleThemeProvider';
 
 export const metadata: Metadata = { 
   title: 'Campus Help | Find Your Perfect Tutor',
-  description: 'Connect with verified campus tutors instantly. Post requests, browse availability, and book sessions at THI.' 
+  description: 'Connect with verified campus tutors instantly. Post requests, browse availability, and book sessions.' 
 };
 
 type RootLayoutProps = { children: ReactNode };
@@ -35,7 +34,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </head>
       <body suppressHydrationWarning className="antialiased">
         <RoleThemeProvider>
-          <ClientOnly><ParticleMesh /></ClientOnly>
           <div className="relative min-h-dvh flex flex-col">
             <ClientOnly><AuthGate /></ClientOnly>
             <ClientOnly><NavBar /></ClientOnly>

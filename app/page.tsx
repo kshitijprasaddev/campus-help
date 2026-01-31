@@ -115,8 +115,8 @@ export default function Home() {
       <section className="container space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-white">Latest requests</h2>
-            <p className="text-sm text-white/70">Filter instantly without leaving your session. Tutors see only open learner requests.</p>
+            <h2 className="text-2xl font-semibold tracking-tight">Latest requests</h2>
+            <p className="text-sm text-[var(--text-muted)]">Browse recent tutoring requests from students.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {!isTutor && <Link href="/request/new" className="btn-ghost">Create request</Link>}
@@ -155,13 +155,13 @@ export default function Home() {
         {loading && (
           <div className="grid gap-4 md:grid-cols-2">
             {Array.from({ length: 4 }).map((_, idx) => (
-              <div key={idx} className="card skeleton h-28" />
+              <div key={idx} className="card h-28 animate-pulse bg-[var(--bg-tertiary)]" />
             ))}
           </div>
         )}
 
         {!loading && error && (
-          <div className="card border border-[#f87171]/30 bg-[rgba(46,12,27,0.4)] p-5 text-sm text-[#fca5a5]">
+          <div className="card border-red-500/30 bg-red-500/10 p-5 text-sm text-red-600 dark:text-red-400">
             {error} Please refresh or try again later.
           </div>
         )}
@@ -182,7 +182,7 @@ export default function Home() {
                 </div>
               ))
             ) : (
-              <div className="card p-6 text-sm text-white/60">
+              <div className="card p-6 text-sm text-[var(--text-muted)]">
                 No requests match that filter yet. {query ? 'Try a broader course keyword.' : 'Be the first to post a request today!'}
               </div>
             )}
@@ -190,7 +190,7 @@ export default function Home() {
         )}
 
         {!loading && !error && hasResults && sorted.length >= REQUEST_LIMIT && (
-          <div className="text-center text-xs uppercase tracking-[0.3em] text-white/40">
+          <div className="text-center text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">
             Showing the newest {REQUEST_LIMIT} requests
           </div>
         )}
@@ -200,9 +200,9 @@ export default function Home() {
         <div className="card flex flex-col gap-6 px-8 py-9 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <div className="tag">Next steps</div>
-            <h3 className="text-2xl font-semibold text-white">{hasSession ? 'Keep momentum on your studies.' : 'Join hundreds of students helping each other.'}</h3>
-            <p className="text-sm text-white/60 md:max-w-xl">
-              Minimal tools to match with the right tutor in minutes. Post what you need, set the price you can offer, and pick from verified tutors who respond instantly. No credits, no clutter just direct collaboration.
+            <h3 className="text-2xl font-semibold">{hasSession ? 'Keep momentum on your studies.' : 'Ready to get started?'}</h3>
+            <p className="text-sm text-[var(--text-muted)] md:max-w-xl">
+              Post what you need, set your budget, and connect with verified tutors who respond instantly.
             </p>
           </div>
           <div className="flex flex-col gap-3 md:min-w-[220px]">
