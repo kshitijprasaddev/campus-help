@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import FeatureCards from '../components/FeatureCardsNew';
+import FloatingDots from '../components/FloatingDots';
 import ModernHero from '../components/ModernHero';
 import RequestCard from '../components/RequestCard';
 import SimpleCalendar from '../components/SimpleCalendar';
@@ -109,6 +110,7 @@ export default function Home() {
   const isTutor = role === 'tutor';
   return (
     <div className="page-transition">
+      <FloatingDots />
       <ModernHero loggedIn={hasSession} />
       <FeatureCards />
       
