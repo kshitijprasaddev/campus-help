@@ -5,11 +5,11 @@ import { useState, useEffect, FormEvent } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 
 type Method = 'otp' | 'password';
-type Step = 'email' | 'verify';
+type Step = 'method' | 'email' | 'verify';
 
 export default function SignIn() {
   const [method, setMethod] = useState<Method>('otp');
-  const [step, setStep] = useState<Step>('email');
+  const [step, setStep] = useState<Step>('method');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
@@ -31,6 +31,31 @@ export default function SignIn() {
       return () => clearTimeout(timer);
     }
   }, [countdown]);
+
+  // Microsoft OAuth sign in (for THI students)
+  async function handleMicrosoftSignIn() {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'azure',
+        options: {
+          scopes: 'email profile openid',
+          redirectTo: `${window.location.origin}/dashboard`,
+        }
+      });
+
+      if (oauthError) {
+        setError(oauthError.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Microsoft sign in error:', err);
+      setError('Failed to connect to Microsoft. Please try another method.');
+      setLoading(false);
+    }
+  }
 
   // Password sign in
   async function handlePasswordSignIn(e: FormEvent) {
@@ -88,6 +113,7 @@ export default function SignIn() {
         email: email.trim(),
         options: {
           shouldCreateUser: false, // Don't create new accounts on signin
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         }
       });
 
@@ -100,7 +126,7 @@ export default function SignIn() {
         return;
       }
 
-      setSuccess('Check your email for the 6-digit code!');
+      setSuccess('Check your email for the magic link or code!');
       setStep('verify');
       setCountdown(60);
     } catch (err) {
@@ -156,7 +182,10 @@ export default function SignIn() {
     try {
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        options: { shouldCreateUser: false }
+        options: { 
+          shouldCreateUser: false,
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        }
       });
 
       if (otpError) {
@@ -189,18 +218,75 @@ export default function SignIn() {
                 </svg>
               )}
             </div>
-            <h1 className="text-2xl font-bold">
-              {step === 'verify' ? 'Enter verification code' : 'Welcome back'}
+            <h1 className="text-2xl font-bold text-[var(--text)]">
+              {step === 'method' && 'Welcome back'}
+              {step === 'email' && 'Sign in with email'}
+              {step === 'verify' && 'Check your inbox'}
             </h1>
             <p className="text-[var(--text-muted)]">
-              {step === 'verify' 
-                ? `We sent a 6-digit code to ${email}` 
-                : 'Sign in to your Campus Help account'}
+              {step === 'method' && 'Sign in to your Campus Help account'}
+              {step === 'email' && 'Enter your email to continue'}
+              {step === 'verify' && `We sent a code to ${email}`}
             </p>
           </div>
 
+          {/* Step: Choose Method */}
+          {step === 'method' && (
+            <div className="space-y-4">
+              {/* THI Students - Microsoft */}
+              <button
+                onClick={handleMicrosoftSignIn}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-xl bg-[#0078D4] text-white font-medium hover:bg-[#106EBE] transition-colors disabled:opacity-50"
+              >
+                <svg width="20" height="20" viewBox="0 0 21 21" fill="currentColor">
+                  <path d="M0 0h10v10H0V0zm11 0h10v10H11V0zM0 11h10v10H0V11zm11 0h10v10H11V11z"/>
+                </svg>
+                {loading ? 'Connecting...' : 'Continue with THI Outlook'}
+              </button>
+
+              <p className="text-center text-xs text-[var(--text-muted)]">
+                🎓 Recommended for THI students
+              </p>
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-[var(--border)]"></div>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-[var(--card)] px-4 text-[var(--text-muted)]">or</span>
+                </div>
+              </div>
+
+              {/* Email option */}
+              <button
+                onClick={() => setStep('email')}
+                className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text)] font-medium hover:bg-[var(--bg-tertiary)] transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2"/>
+                  <path d="M22 6L12 13L2 6"/>
+                </svg>
+                Continue with Email
+              </button>
+
+              {error && (
+                <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+            </div>
+          )}
+
           {step === 'email' && (
             <>
+              <button
+                type="button"
+                onClick={() => setStep('method')}
+                className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text)]"
+              >
+                ← Back
+              </button>
               {/* Method toggle */}
               <div className="flex rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)]">
                 <button
@@ -326,8 +412,20 @@ export default function SignIn() {
           {/* OTP Verification */}
           {step === 'verify' && (
             <form onSubmit={handleVerifyOTP} className="space-y-4">
+              <button
+                type="button"
+                onClick={() => setStep('email')}
+                className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text)]"
+              >
+                ← Back
+              </button>
+
+              <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-700 dark:text-blue-400 text-sm">
+                💡 Check your email! You can click the magic link OR enter the 6-digit code below.
+              </div>
+
               <div className="space-y-2">
-                <label htmlFor="otp" className="block text-sm font-medium">Verification code</label>
+                <label htmlFor="otp" className="block text-sm font-medium">Or enter 6-digit code</label>
                 <input 
                   id="otp"
                   type="text"
@@ -357,31 +455,16 @@ export default function SignIn() {
               )}
 
               <button type="submit" className="btn w-full py-4" disabled={loading || otp.length !== 6}>
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="spinner" />
-                    Verifying...
-                  </span>
-                ) : 'Verify & Sign In'}
+                {loading ? 'Verifying...' : 'Verify & Sign In'}
               </button>
 
-              <div className="flex items-center justify-between text-sm">
-                <button 
-                  type="button" 
-                  onClick={() => { setStep('email'); setOtp(''); }}
-                  className="text-[var(--text-muted)] hover:text-[var(--text)]"
-                >
-                  ← Back
-                </button>
-                <button 
-                  type="button" 
-                  onClick={handleResendOTP}
-                  disabled={countdown > 0 || loading}
-                  className={countdown > 0 ? 'text-[var(--text-muted)]' : 'text-[var(--primary)] hover:underline'}
-                >
-                  {countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
-                </button>
-              </div>
+              <p className="text-center text-sm text-[var(--text-muted)]">
+                {countdown > 0 ? `Resend in ${countdown}s` : (
+                  <button type="button" onClick={handleResendOTP} disabled={loading} className="text-[var(--primary)] hover:underline">
+                    Resend code
+                  </button>
+                )}
+              </p>
             </form>
           )}
 

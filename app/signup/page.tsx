@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useState, useEffect, FormEvent } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 
-type Step = 'email' | 'otp';
+type Step = 'method' | 'email' | 'otp';
 
 export default function SignUp() {
-  const [step, setStep] = useState<Step>('email');
+  const [step, setStep] = useState<Step>('method');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +29,31 @@ export default function SignUp() {
     }
   }, [countdown]);
 
+  // Microsoft OAuth sign in (for THI students)
+  async function handleMicrosoftSignIn() {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'azure',
+        options: {
+          scopes: 'email profile openid',
+          redirectTo: `${window.location.origin}/onboarding`,
+        }
+      });
+
+      if (oauthError) {
+        setError(oauthError.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Microsoft sign in error:', err);
+      setError('Failed to connect to Microsoft. Please try email instead.');
+      setLoading(false);
+    }
+  }
+
   async function handleSendOTP(e: FormEvent) {
     e.preventDefault();
     
@@ -41,11 +66,11 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      // Send OTP to email
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
           shouldCreateUser: true,
+          emailRedirectTo: `${window.location.origin}/onboarding`,
         }
       });
 
@@ -54,7 +79,7 @@ export default function SignUp() {
         return;
       }
 
-      setSuccess('Check your email for the 6-digit code!');
+      setSuccess('Check your email for the magic link or 6-digit code!');
       setStep('otp');
       setCountdown(60);
     } catch (err) {
@@ -89,9 +114,9 @@ export default function SignUp() {
       }
 
       if (data.session) {
-        setSuccess('Email verified! Redirecting...');
+        setSuccess('Email verified! Setting up your account...');
         setTimeout(() => {
-          window.location.href = '/profile';
+          window.location.href = '/onboarding';
         }, 1000);
       }
     } catch (err) {
@@ -113,6 +138,7 @@ export default function SignUp() {
         email: email.trim(),
         options: {
           shouldCreateUser: true,
+          emailRedirectTo: `${window.location.origin}/onboarding`,
         }
       });
 
@@ -137,35 +163,26 @@ export default function SignUp() {
           {/* Header */}
           <div className="text-center space-y-2">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-thi-blue/10 dark:bg-[var(--primary)]/10 mb-4">
-              {step === 'otp' ? (
-                <span className="text-3xl">📧</span>
-              ) : (
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-thi-blue dark:text-[var(--primary)]">
-                  <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              )}
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-thi-blue dark:text-[var(--primary)]">
+                <path d="M4 9.5L12 4L20 9.5V19.5C20 20.0523 19.5523 20.5 19 20.5H5C4.44772 20.5 4 20.0523 4 19.5V9.5Z" stroke="currentColor" strokeWidth="1.6" />
+                <path d="M9 20.5V13.5H15V20.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
             </div>
-            <h1 className="text-2xl font-bold">
-              {step === 'email' && 'Create your account'}
-              {step === 'otp' && 'Enter verification code'}
+            <h1 className="text-2xl font-bold text-[var(--text)]">
+              {step === 'method' && 'Create your account'}
+              {step === 'email' && 'Enter your email'}
+              {step === 'otp' && 'Check your inbox'}
             </h1>
             <p className="text-[var(--text-muted)]">
-              {step === 'email' && 'Join Campus Help and start learning'}
-              {step === 'otp' && `We sent a 6-digit code to ${email}`}
+              {step === 'method' && 'Join Campus Help and start learning'}
+              {step === 'email' && 'We\'ll send you a magic link'}
+              {step === 'otp' && `We sent a code to ${email}`}
             </p>
           </div>
 
-          {/* Step indicator */}
-          <div className="flex items-center justify-center gap-2">
-            <div className={`w-8 h-1 rounded-full ${step === 'email' ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}`} />
-            <div className={`w-8 h-1 rounded-full ${step === 'otp' ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}`} />
-          </div>
-
-          {/* Step 1: Email */}
-          {step === 'email' && (
-            <form onSubmit={handleSendOTP} className="space-y-4">
+          {/* Step: Choose Method */}
+          {step === 'method' && (
+            <div className="space-y-4">
               {/* Features preview */}
               <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
@@ -180,6 +197,62 @@ export default function SignUp() {
                 ))}
               </div>
 
+              {/* THI Students - Microsoft */}
+              <button
+                onClick={handleMicrosoftSignIn}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-xl bg-[#0078D4] text-white font-medium hover:bg-[#106EBE] transition-colors disabled:opacity-50"
+              >
+                <svg width="20" height="20" viewBox="0 0 21 21" fill="currentColor">
+                  <path d="M0 0h10v10H0V0zm11 0h10v10H11V0zM0 11h10v10H0V11zm11 0h10v10H11V11z"/>
+                </svg>
+                {loading ? 'Connecting...' : 'Continue with THI Outlook'}
+              </button>
+
+              <p className="text-center text-xs text-[var(--text-muted)]">
+                🎓 Recommended for THI students — instant verification
+              </p>
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-[var(--border)]"></div>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-[var(--card)] px-4 text-[var(--text-muted)]">or</span>
+                </div>
+              </div>
+
+              {/* Email option */}
+              <button
+                onClick={() => setStep('email')}
+                className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text)] font-medium hover:bg-[var(--bg-tertiary)] transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2"/>
+                  <path d="M22 6L12 13L2 6"/>
+                </svg>
+                Continue with Email
+              </button>
+
+              {error && (
+                <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step: Enter Email */}
+          {step === 'email' && (
+            <form onSubmit={handleSendOTP} className="space-y-4">
+              <button
+                type="button"
+                onClick={() => setStep('method')}
+                className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text)]"
+              >
+                ← Back
+              </button>
+
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium">Email address</label>
                 <input 
@@ -191,11 +264,9 @@ export default function SignUp() {
                   onChange={e => setEmail(e.target.value)}
                   disabled={loading}
                   autoComplete="email"
+                  autoFocus
                   required 
                 />
-                <p className="text-xs text-[var(--text-muted)]">
-                  We&apos;ll send you a 6-digit verification code
-                </p>
               </div>
 
               {error && (
@@ -204,22 +275,29 @@ export default function SignUp() {
                 </div>
               )}
 
-              <button type="submit" className="btn w-full py-4" disabled={loading}>
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="spinner" />
-                    Sending code...
-                  </span>
-                ) : 'Continue with Email'}
+              <button type="submit" className="btn w-full py-4" disabled={loading || !email}>
+                {loading ? 'Sending...' : 'Send magic link'}
               </button>
             </form>
           )}
 
-          {/* Step 2: OTP Verification */}
+          {/* Step: OTP Verification */}
           {step === 'otp' && (
             <form onSubmit={handleVerifyOTP} className="space-y-4">
+              <button
+                type="button"
+                onClick={() => setStep('email')}
+                className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text)]"
+              >
+                ← Back
+              </button>
+
+              <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-700 dark:text-blue-400 text-sm">
+                💡 Check your email! You can click the magic link OR enter the 6-digit code below.
+              </div>
+
               <div className="space-y-2">
-                <label htmlFor="otp" className="block text-sm font-medium">Verification code</label>
+                <label htmlFor="otp" className="block text-sm font-medium">Or enter 6-digit code</label>
                 <input 
                   id="otp"
                   type="text"
@@ -232,7 +310,6 @@ export default function SignUp() {
                   onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   disabled={loading}
                   autoComplete="one-time-code"
-                  required 
                 />
               </div>
 
@@ -249,31 +326,16 @@ export default function SignUp() {
               )}
 
               <button type="submit" className="btn w-full py-4" disabled={loading || otp.length !== 6}>
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="spinner" />
-                    Verifying...
-                  </span>
-                ) : 'Verify & Continue'}
+                {loading ? 'Verifying...' : 'Verify code'}
               </button>
 
-              <div className="flex items-center justify-between text-sm">
-                <button 
-                  type="button" 
-                  onClick={() => setStep('email')}
-                  className="text-[var(--text-muted)] hover:text-[var(--text)]"
-                >
-                  ← Change email
-                </button>
-                <button 
-                  type="button" 
-                  onClick={handleResendOTP}
-                  disabled={countdown > 0 || loading}
-                  className={countdown > 0 ? 'text-[var(--text-muted)]' : 'text-[var(--primary)] hover:underline'}
-                >
-                  {countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
-                </button>
-              </div>
+              <p className="text-center text-sm text-[var(--text-muted)]">
+                {countdown > 0 ? `Resend in ${countdown}s` : (
+                  <button type="button" onClick={handleResendOTP} disabled={loading} className="text-[var(--primary)] hover:underline">
+                    Resend code
+                  </button>
+                )}
+              </p>
             </form>
           )}
 
@@ -288,4 +350,3 @@ export default function SignUp() {
     </div>
   );
 }
-

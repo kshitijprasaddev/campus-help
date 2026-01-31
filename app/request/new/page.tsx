@@ -46,16 +46,45 @@ function NewRequestInner() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user) {
+    const checkAuth = async () => {
+      try {
+        // First try to get session
+        const { data: session } = await supabase.auth.getSession();
+        if (session?.session?.user) {
+          setUserId(session.session.user.id);
+          setCheckingAuth(false);
+          return;
+        }
+        
+        // Fallback to getUser
+        const { data: u } = await supabase.auth.getUser();
+        if (!u.user) {
+          setCheckingAuth(false);
+          location.href = '/signin';
+          return;
+        }
+        setUserId(u.user.id);
+        setCheckingAuth(false);
+      } catch (err) {
+        console.error('Auth check error:', err);
         setCheckingAuth(false);
         location.href = '/signin';
-        return;
       }
-      setUserId(u.user.id);
-      setCheckingAuth(false);
-    })();
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        setUserId(session.user.id);
+        setCheckingAuth(false);
+      } else if (event === 'SIGNED_OUT') {
+        location.href = '/signin';
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
