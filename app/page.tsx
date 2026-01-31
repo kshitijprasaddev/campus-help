@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import FeatureCards from '../components/FeatureCardsNew';
-import AnimatedHero from '../components/AnimatedHero';
+import AnimatedHero from '../components/AnimatedHeroNew';
 import RequestCard from '../components/RequestCard';
 import TutorCalendarWidget from '../components/TutorCalendarWidget';
 import { supabase } from '../lib/supabaseClient';

@@ -132,8 +132,8 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
               <div className="tag">Signed in as</div>
-              <h1 className="mt-2 text-2xl font-semibold text-white">{email || '—'}</h1>
-              <p className="mt-2 text-sm text-white/55">
+              <h1 className="mt-2 text-2xl font-semibold">{email || '—'}</h1>
+              <p className="mt-2 text-sm text-[var(--text-muted)]">
                 Keep track of your open requests, bids, and replies from classmates in one workspace.
               </p>
             </div>
@@ -149,18 +149,18 @@ export default function DashboardPage() {
           <div className="flex items-start justify-between">
             <div>
               <div className="tag">Snapshot</div>
-              <h2 className="mt-2 text-lg font-semibold text-white">Request performance</h2>
+              <h2 className="mt-2 text-lg font-semibold">Request performance</h2>
             </div>
             <Link href="/request/new" className="btn-ghost text-xs">Create new</Link>
           </div>
           <div className="mt-6 grid gap-4">
-            <div className="rounded-2xl border border-[var(--border)]/60 bg-white/5 px-5 py-4">
-              <div className="text-xs uppercase tracking-[0.3em] text-white/45">Open requests</div>
-              <div className="mt-2 text-2xl font-semibold text-white">{openRequests}</div>
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-tertiary)] px-5 py-4">
+              <div className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">Open requests</div>
+              <div className="mt-2 text-2xl font-semibold">{openRequests}</div>
             </div>
-            <div className="rounded-2xl border border-[var(--border)]/60 bg-white/5 px-5 py-4">
-              <div className="text-xs uppercase tracking-[0.3em] text-white/45">Closed requests</div>
-              <div className="mt-2 text-2xl font-semibold text-white">{closedRequests}</div>
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-tertiary)] px-5 py-4">
+              <div className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">Closed requests</div>
+              <div className="mt-2 text-2xl font-semibold">{closedRequests}</div>
             </div>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function DashboardPage() {
 
       <div className="space-y-4">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-xl font-semibold text-white">My recent requests</h2>
+          <h2 className="text-xl font-semibold">My recent requests</h2>
           <Link href="/my" className="btn-ghost text-sm">View all activity</Link>
         </div>
 
@@ -187,7 +187,7 @@ export default function DashboardPage() {
         )}
 
         {!loading && !error && myRequests.length === 0 && (
-          <div className="card p-6 text-sm text-white/60">
+          <div className="card p-6 text-sm text-[var(--text-muted)]">
             You haven’t posted any requests yet. Start by creating one for your toughest course.
           </div>
         )}
@@ -198,17 +198,17 @@ export default function DashboardPage() {
               <Link
                 key={req.id}
                 href={`/request/${req.id}`}
-                className="group rounded-2xl border border-[var(--border)]/60 bg-[rgba(12,19,38,0.78)] p-5 transition-all hover:-translate-y-1 hover:border-[var(--primary)]/40 hover:bg-[rgba(26,35,58,0.85)]"
+                className="card group p-5 transition-all hover:-translate-y-1 hover:border-thi-blue/40 dark:hover:border-[var(--primary)]/40"
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-base font-semibold text-white">
-                    {req.title} <span className="text-white/45">· {req.course}</span>
+                  <div className="text-base font-semibold">
+                    {req.title} <span className="text-[var(--text-muted)]">· {req.course}</span>
                   </div>
-                  <span className={`rounded-full px-2 py-1 text-xs font-medium uppercase tracking-[0.25em] ${req.status === 'closed' ? 'bg-[rgba(248,113,113,0.12)] text-[#fca5a5]' : 'bg-[rgba(74,222,128,0.12)] text-[#86efac]'}`}>
+                  <span className={`rounded-full px-2 py-1 text-xs font-medium uppercase tracking-[0.25em] ${req.status === 'closed' ? 'bg-red-500/10 text-red-500 dark:text-red-400' : 'bg-green-500/10 text-green-600 dark:text-green-400'}`}>
                     {req.status}
                   </span>
                 </div>
-                <div className="mt-2 text-xs text-white/45">{new Date(req.created_at).toLocaleString()}</div>
+                <div className="mt-2 text-xs text-[var(--text-muted)]">{new Date(req.created_at).toLocaleString()}</div>
               </Link>
             ))}
           </div>
@@ -218,12 +218,12 @@ export default function DashboardPage() {
       {/* Bookings Section */}
       <div className="space-y-4">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-xl font-semibold text-white">My Sessions</h2>
+          <h2 className="text-xl font-semibold">My Sessions</h2>
           <Link href="/tutors" className="btn-ghost text-sm">Book a tutor</Link>
         </div>
 
         {!loading && upcomingBookings.length === 0 && (
-          <div className="card p-6 text-sm text-white/60">
+          <div className="card p-6 text-sm text-[var(--text-muted)]">
             No upcoming sessions. Browse tutors to book your first session!
           </div>
         )}
@@ -238,25 +238,25 @@ export default function DashboardPage() {
               return (
                 <div
                   key={booking.id}
-                  className="rounded-2xl border border-[var(--border)]/60 bg-[rgba(12,19,38,0.78)] p-5"
+                  className="card p-5"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-3">
-                        <span className="text-lg font-semibold text-white">{otherPerson}</span>
+                        <span className="text-lg font-semibold">{otherPerson}</span>
                         <span className={`rounded-full px-2 py-1 text-xs font-medium uppercase tracking-[0.25em] ${
-                          booking.status === 'confirmed' ? 'bg-[rgba(74,222,128,0.12)] text-[#86efac]' :
-                          booking.status === 'pending' ? 'bg-[rgba(250,204,21,0.12)] text-[#fde047]' :
-                          'bg-[rgba(248,113,113,0.12)] text-[#fca5a5]'
+                          booking.status === 'confirmed' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
+                          booking.status === 'pending' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                          'bg-red-500/10 text-red-500 dark:text-red-400'
                         }`}>
                           {booking.status}
                         </span>
                       </div>
-                      <div className="mt-1 text-sm text-white/60">{roleLabel}</div>
-                      <div className="mt-2 text-sm text-white/45">
+                      <div className="mt-1 text-sm text-[var(--text-muted)]">{roleLabel}</div>
+                      <div className="mt-2 text-sm text-[var(--text-muted)]">
                         {formatBookingTime(booking.scheduled_start, booking.scheduled_end)}
                       </div>
-                      <div className="mt-1 text-xs text-white/35 uppercase tracking-wider">
+                      <div className="mt-1 text-xs text-[var(--text-muted)] uppercase tracking-wider">
                         {booking.mode === 'in-person' ? 'In Person' : 'Online'}
                       </div>
                     </div>
@@ -273,7 +273,7 @@ export default function DashboardPage() {
                         )}
                         <button 
                           onClick={() => handleBookingAction(booking.id, 'cancelled')}
-                          className="btn-ghost text-xs text-[#fca5a5] hover:bg-[rgba(248,113,113,0.12)]"
+                          className="btn-ghost text-xs text-red-500 dark:text-red-400 hover:bg-red-500/10"
                         >
                           Cancel
                         </button>

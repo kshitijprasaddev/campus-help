@@ -1,78 +1,90 @@
 'use client';
-// app/signup/page.tsx
-import Link from 'next/link';
-import { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import Toast from '../../components/Toast';
 
-const ALLOWED = (process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+import Link from 'next/link';
+import { useState, useEffect, FormEvent } from 'react';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [msg, setMsg] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ msg: string; type: 'success'|'error' } | null>(null);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const domain = email.split('@')[1]?.toLowerCase();
-  const domainAllowed = !!domain && ALLOWED.includes(domain);
-
-  function mapErrorMessage(message: string | undefined) {
-    if (!message) return 'Signup failed';
-    if (message.toLowerCase().includes('failed to fetch')) {
-      return 'Could not reach Supabase. Check your internet connection and .env values, then refresh.';
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
     }
-    return message;
-  }
+  }, [error]);
 
-  async function signUp() {
-    setMsg(null);
-    setToast(null);
-    if (!domainAllowed) { setMsg(`Use your uni email (${ALLOWED.join(', ')})`); return; }
-    if (password.length < 8) { setMsg('Password must be at least 8 characters.'); return; }
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    
+    if (!email || !password || !confirmPassword) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+
     try {
-      setLoading(true);
-      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined } });
-      if (error) throw error;
-      setToast({ msg: 'Account created. Check your inbox to confirm.', type: 'success' });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : undefined;
-      setToast({ msg: mapErrorMessage(message), type: 'error' });
+      const { error: authError } = await supabase.auth.signUp({ 
+        email: email.trim(), 
+        password,
+        options: {
+          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined
+        }
+      });
+      
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          setError('This email is already registered. Try signing in instead.');
+        } else {
+          setError(authError.message);
+        }
+        return;
+      }
+
+      setSuccess('Account created! Check your email to confirm your account.');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      console.error('Sign up error:', err);
+      setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-4">
-      {/* Background decorations */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-[var(--accent)]/10 rounded-full blur-[150px]" />
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[var(--primary)]/10 rounded-full blur-[150px]" />
-      </div>
-
-      <div className="relative w-full max-w-md animate-fade-in-up">
-        {/* Card glow */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-[var(--accent)]/20 via-transparent to-[var(--primary)]/20 rounded-[32px] blur-xl opacity-50" />
-        
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-8 space-y-6">
-          {/* Header */}
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <form onSubmit={handleSubmit} className="card p-8 space-y-6 animate-fade-in-up">
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--accent)]/20 to-[var(--primary)]/10 border border-white/10 mb-4">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-[var(--accent)]">
-                <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-thi-blue/10 dark:bg-[var(--primary)]/10 mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-thi-blue dark:text-[var(--primary)]">
+                <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+                <path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-white">Join Campus Help</h1>
-            <p className="text-sm text-white/50">Create your account to get started</p>
-          </div>
-
-          {/* Allowed domains badge */}
-          <div className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs text-white/60">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            Allowed: {ALLOWED.join(', ') || 'Any email'}
+            <h1 className="text-2xl font-bold">Create your account</h1>
+            <p className="text-[var(--text-muted)]">Join Campus Help and start learning</p>
           </div>
 
           {/* Features preview */}
@@ -80,75 +92,102 @@ export default function SignUp() {
             {[
               { icon: '📚', label: 'Find Tutors' },
               { icon: '💬', label: 'Post Requests' },
-              { icon: '⚡', label: 'Instant Match' },
+              { icon: '⚡', label: 'Fast Matching' },
             ].map((feature, i) => (
-              <div key={i} className="text-center p-3 rounded-xl bg-white/5 border border-white/5">
+              <div key={i} className="text-center p-3 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
                 <div className="text-xl mb-1">{feature.icon}</div>
-                <div className="text-[10px] text-white/50 uppercase tracking-wider">{feature.label}</div>
+                <div className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">{feature.label}</div>
               </div>
             ))}
           </div>
           
-          {/* Form fields */}
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-xs font-medium text-white/60 uppercase tracking-wider">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium">Email address</label>
               <input 
+                id="email"
                 type="email" 
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-[var(--primary)]/50 focus:ring-2 focus:ring-[var(--primary)]/20 focus:outline-none transition-all duration-300" 
-                placeholder="you@thi.de" 
+                className="input"
+                placeholder="your@email.com" 
                 value={email} 
-                onChange={e=>setEmail(e.target.value)} 
+                onChange={e => setEmail(e.target.value)}
+                disabled={loading}
+                autoComplete="email"
+                required 
               />
             </div>
+            
             <div className="space-y-2">
-              <label className="text-xs font-medium text-white/60 uppercase tracking-wider">Password</label>
+              <label htmlFor="password" className="block text-sm font-medium">Password</label>
               <input 
+                id="password"
                 type="password" 
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-[var(--primary)]/50 focus:ring-2 focus:ring-[var(--primary)]/20 focus:outline-none transition-all duration-300" 
-                placeholder="Min 8 characters" 
+                className="input"
+                placeholder="At least 8 characters" 
                 value={password} 
-                onChange={e=>setPassword(e.target.value)} 
+                onChange={e => setPassword(e.target.value)}
+                disabled={loading}
+                autoComplete="new-password"
+                minLength={8}
+                required 
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium">Confirm password</label>
+              <input 
+                id="confirmPassword"
+                type="password" 
+                className="input"
+                placeholder="Confirm your password" 
+                value={confirmPassword} 
+                onChange={e => setConfirmPassword(e.target.value)}
+                disabled={loading}
+                autoComplete="new-password"
+                required 
               />
             </div>
           </div>
 
-          {msg && (
-            <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
-              {msg}
+          {error && (
+            <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm animate-fade-in-up">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{error}</span>
+              </div>
+            </div>
+          )}
+
+          {success && (
+            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-600 dark:text-green-400 text-sm animate-fade-in-up">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{success}</span>
+              </div>
             </div>
           )}
           
-          <button
-            type="button"
-            onClick={signUp}
-            className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
-              loading 
-                ? 'bg-white/10 text-white/50 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-[var(--accent)] to-[var(--primary)] text-white hover:shadow-[0_10px_40px_-10px_var(--accent)] hover:scale-[1.02]'
-            }`}
-            disabled={loading}
-          >
+          <button type="submit" className="btn w-full py-4" disabled={loading}>
             {loading ? (
-              <span className="inline-flex items-center gap-2">
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                </svg>
+              <span className="flex items-center gap-2">
+                <span className="spinner" />
                 Creating account...
               </span>
-            ) : 'Create free account'}
+            ) : 'Create account'}
           </button>
 
-          <div className="text-center text-sm text-white/50">
+          <div className="text-center text-sm text-[var(--text-muted)]">
             Already have an account?{' '}
-            <Link className="text-[var(--primary)] hover:text-[var(--accent)] transition-colors font-medium" href="/signin">
+            <Link href="/signin" className="text-thi-blue dark:text-[var(--primary)] font-semibold hover:underline">
               Sign in
             </Link>
           </div>
-        </div>
+        </form>
       </div>
-      {toast && <Toast message={toast.msg} type={toast.type} />}
     </div>
   );
 }
