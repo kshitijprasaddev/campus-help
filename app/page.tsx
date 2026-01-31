@@ -2,9 +2,9 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import FeatureCards from '../components/FeatureCardsNew';
-import AnimatedHero from '../components/AnimatedHeroNew';
+import SophisticatedHero from '../components/SophisticatedHero';
 import RequestCard from '../components/RequestCard';
-import TutorCalendarWidget from '../components/TutorCalendarWidget';
+import ProfessionalCalendar from '../components/ProfessionalCalendar';
 import { supabase } from '../lib/supabaseClient';
 import { useRoleTheme } from '../components/RoleThemeProvider';
 
@@ -108,14 +108,16 @@ export default function Home() {
   const hasResults = sorted.length > 0;
   const isTutor = role === 'tutor';
   return (
-    <div className="space-y-24 page-transition">
-      <AnimatedHero loggedIn={hasSession} />
+    <div className="page-transition">
+      <SophisticatedHero loggedIn={hasSession} />
       <FeatureCards />
+      
+      <ProfessionalCalendar />
 
-      <section className="container space-y-6">
+      <section className="container space-y-6 py-16">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Latest requests</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-[var(--text)]">Latest requests</h2>
             <p className="text-sm text-[var(--text-muted)]">Browse recent tutoring requests from students.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -196,11 +198,11 @@ export default function Home() {
         )}
       </section>
 
-      <section className="container">
+      <section className="container pb-16">
         <div className="card flex flex-col gap-6 px-8 py-9 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <div className="tag">Next steps</div>
-            <h3 className="text-2xl font-semibold">{hasSession ? 'Keep momentum on your studies.' : 'Ready to get started?'}</h3>
+            <h3 className="text-2xl font-semibold text-[var(--text)]">{hasSession ? 'Keep momentum on your studies.' : 'Ready to get started?'}</h3>
             <p className="text-sm text-[var(--text-muted)] md:max-w-xl">
               Post what you need, set your budget, and connect with verified tutors who respond instantly.
             </p>
@@ -220,8 +222,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <TutorCalendarWidget />
     </div>
   );
 }
