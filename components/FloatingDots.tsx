@@ -9,7 +9,6 @@ interface Particle {
   vy: number;
   radius: number;
   opacity: number;
-  color: string;
 }
 
 export default function FloatingDots() {
@@ -25,6 +24,9 @@ export default function FloatingDots() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Check if dark mode
+    const isDark = document.documentElement.classList.contains('dark');
+
     // Set canvas size
     const setCanvasSize = () => {
       canvas.width = window.innerWidth;
@@ -39,25 +41,19 @@ export default function FloatingDots() {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Colors that work with the theme
-    const colors = [
-      'rgba(99, 102, 241, 0.6)',   // Indigo
-      'rgba(139, 92, 246, 0.5)',   // Purple
-      'rgba(236, 72, 153, 0.4)',   // Pink
-      'rgba(59, 130, 246, 0.5)',   // Blue
-      'rgba(16, 185, 129, 0.4)',   // Emerald
-    ];
+    // THI Royal Blue colors - more visible
+    const dotColor = isDark ? 'rgba(96, 165, 250, 0.8)' : 'rgba(0, 51, 102, 0.6)';
+    const lineColor = isDark ? 'rgba(96, 165, 250, ' : 'rgba(0, 51, 102, ';
 
-    // Initialize particles
-    const particleCount = Math.min(80, Math.floor((window.innerWidth * window.innerHeight) / 15000));
+    // Initialize particles - more particles, bigger
+    const particleCount = Math.min(100, Math.floor((window.innerWidth * window.innerHeight) / 12000));
     particlesRef.current = Array.from({ length: particleCount }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      radius: Math.random() * 3 + 1,
-      opacity: Math.random() * 0.5 + 0.2,
-      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      radius: Math.random() * 2.5 + 1.5, // Bigger dots
+      opacity: Math.random() * 0.4 + 0.4, // More opaque
     }));
 
     // Animation loop
@@ -72,8 +68,8 @@ export default function FloatingDots() {
         
         if (distance < 150) {
           const force = (150 - distance) / 150;
-          particle.vx -= (dx / distance) * force * 0.02;
-          particle.vy -= (dy / distance) * force * 0.02;
+          particle.vx -= (dx / distance) * force * 0.03;
+          particle.vy -= (dy / distance) * force * 0.03;
         }
 
         // Update position
@@ -85,8 +81,8 @@ export default function FloatingDots() {
         particle.vy *= 0.99;
 
         // Add slight random movement
-        particle.vx += (Math.random() - 0.5) * 0.02;
-        particle.vy += (Math.random() - 0.5) * 0.02;
+        particle.vx += (Math.random() - 0.5) * 0.015;
+        particle.vy += (Math.random() - 0.5) * 0.015;
 
         // Wrap around edges
         if (particle.x < 0) particle.x = canvas.width;
@@ -94,24 +90,24 @@ export default function FloatingDots() {
         if (particle.y < 0) particle.y = canvas.height;
         if (particle.y > canvas.height) particle.y = 0;
 
-        // Draw particle
+        // Draw particle - THI Blue
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = particle.color;
+        ctx.fillStyle = dotColor;
         ctx.fill();
 
-        // Draw connections between nearby particles
+        // Draw connections between nearby particles - THI Blue
         particlesRef.current.forEach((other) => {
           const dx = particle.x - other.x;
           const dy = particle.y - other.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 120 && dist > 0) {
+          if (dist < 150 && dist > 0) {
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(other.x, other.y);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${0.1 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = `${lineColor}${0.25 * (1 - dist / 150)})`;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
           }
         });
@@ -133,7 +129,7 @@ export default function FloatingDots() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.7 }}
+      style={{ opacity: 1 }}
     />
   );
 }

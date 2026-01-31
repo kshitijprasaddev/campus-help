@@ -9,24 +9,24 @@ type HeroProps = {
 export default function ModernHero({ loggedIn }: HeroProps) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--bg)]">
-      {/* Subtle gradient background orbs */}
+      {/* THI Royal Blue gradient background orbs */}
       <div className="absolute inset-0 overflow-hidden">
         <div 
-          className="absolute -top-[40%] -left-[20%] w-[70%] h-[70%] rounded-full opacity-30 blur-[120px]"
-          style={{ background: 'linear-gradient(135deg, var(--primary) 0%, transparent 70%)' }}
+          className="absolute -top-[40%] -left-[20%] w-[70%] h-[70%] rounded-full opacity-40 blur-[120px]"
+          style={{ background: 'linear-gradient(135deg, #003366 0%, #0052a5 50%, transparent 70%)' }}
         />
         <div 
-          className="absolute -bottom-[30%] -right-[20%] w-[60%] h-[60%] rounded-full opacity-20 blur-[100px]"
-          style={{ background: 'linear-gradient(135deg, #06b6d4 0%, transparent 70%)' }}
+          className="absolute -bottom-[30%] -right-[20%] w-[60%] h-[60%] rounded-full opacity-30 blur-[100px]"
+          style={{ background: 'linear-gradient(135deg, #0077cc 0%, #003366 50%, transparent 70%)' }}
         />
       </div>
 
-      {/* Subtle grid pattern */}
+      {/* Subtle grid pattern - more visible */}
       <div 
-        className="absolute inset-0 opacity-[0.02]"
+        className="absolute inset-0 opacity-[0.04] dark:opacity-[0.03]"
         style={{
-          backgroundImage: `linear-gradient(var(--text) 1px, transparent 1px), linear-gradient(90deg, var(--text) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
+          backgroundImage: `linear-gradient(#003366 1px, transparent 1px), linear-gradient(90deg, #003366 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
         }}
       />
 
@@ -34,12 +34,12 @@ export default function ModernHero({ loggedIn }: HeroProps) {
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex flex-col items-center text-center">
           
-          {/* Small pill badge - glassmorphism */}
+          {/* THI Badge - glassmorphism with THI blue accent */}
           <div className="mb-12">
-            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/[0.08] dark:bg-white/[0.05] backdrop-blur-xl border border-white/[0.08] shadow-lg shadow-black/5">
+            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#003366]/5 dark:bg-white/[0.05] backdrop-blur-xl border border-[#003366]/15 dark:border-white/[0.08] shadow-lg shadow-[#003366]/5">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#003366] dark:bg-[#60a5fa] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#003366] dark:bg-[#60a5fa]"></span>
               </span>
               <span className="text-sm font-medium text-[var(--text)]/80">Live at THI</span>
               <span className="text-[var(--text)]/40">•</span>
@@ -59,19 +59,19 @@ export default function ModernHero({ loggedIn }: HeroProps) {
             Post what you need. Connect with verified tutors who respond in minutes—not days.
           </p>
 
-          {/* CTA Buttons - clean, generous padding */}
+          {/* CTA Buttons - THI Royal Blue theme */}
           <div className="flex flex-col sm:flex-row items-center gap-4 mb-20">
             {loggedIn ? (
               <>
                 <Link 
                   href="/request/new" 
-                  className="group px-8 py-4 rounded-2xl bg-[var(--text)] text-[var(--bg)] font-medium text-base transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:-translate-y-0.5"
+                  className="group px-8 py-4 rounded-2xl bg-[#003366] dark:bg-[#60a5fa] text-white dark:text-[#0a0f1a] font-medium text-base transition-all duration-300 hover:shadow-xl hover:shadow-[#003366]/20 hover:-translate-y-0.5"
                 >
                   Post a Request
                 </Link>
                 <Link 
                   href="/tutors" 
-                  className="px-8 py-4 rounded-2xl bg-white/[0.05] backdrop-blur-sm border border-white/[0.1] text-[var(--text)] font-medium text-base transition-all duration-300 hover:bg-white/[0.08] hover:border-white/[0.15]"
+                  className="px-8 py-4 rounded-2xl bg-[#003366]/5 dark:bg-white/[0.05] backdrop-blur-sm border border-[#003366]/20 dark:border-white/[0.1] text-[var(--text)] font-medium text-base transition-all duration-300 hover:bg-[#003366]/10 dark:hover:bg-white/[0.08]"
                 >
                   Browse Tutors
                 </Link>
@@ -80,13 +80,13 @@ export default function ModernHero({ loggedIn }: HeroProps) {
               <>
                 <Link 
                   href="/signup" 
-                  className="group px-8 py-4 rounded-2xl bg-[var(--text)] text-[var(--bg)] font-medium text-base transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:-translate-y-0.5"
+                  className="group px-8 py-4 rounded-2xl bg-[#003366] dark:bg-[#60a5fa] text-white dark:text-[#0a0f1a] font-medium text-base transition-all duration-300 hover:shadow-xl hover:shadow-[#003366]/20 hover:-translate-y-0.5"
                 >
                   Get Started — Free
                 </Link>
                 <Link 
                   href="/signin" 
-                  className="px-8 py-4 rounded-2xl bg-white/[0.05] backdrop-blur-sm border border-white/[0.1] text-[var(--text)] font-medium text-base transition-all duration-300 hover:bg-white/[0.08] hover:border-white/[0.15]"
+                  className="px-8 py-4 rounded-2xl bg-[#003366]/5 dark:bg-white/[0.05] backdrop-blur-sm border border-[#003366]/20 dark:border-white/[0.1] text-[var(--text)] font-medium text-base transition-all duration-300 hover:bg-[#003366]/10 dark:hover:bg-white/[0.08]"
                 >
                   Sign In
                 </Link>
