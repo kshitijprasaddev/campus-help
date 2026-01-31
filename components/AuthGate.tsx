@@ -21,10 +21,26 @@ export default function AuthGate() {
           
           if (error) {
             console.error('Magic link auth error:', error.message);
-          } else if (data.session) {
-            // Clean up URL and redirect
+            setProcessing(false);
+            return;
+          }
+          
+          if (data.session) {
+            // Clean up URL
             window.history.replaceState({}, '', window.location.pathname);
-            window.location.href = '/dashboard';
+            
+            // Check if user needs onboarding
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('onboarding_completed')
+              .eq('id', data.session.user.id)
+              .single();
+            
+            if (!profile || !profile.onboarding_completed) {
+              window.location.href = '/onboarding';
+            } else {
+              window.location.href = '/dashboard';
+            }
             return;
           }
         } catch (e) {
@@ -37,14 +53,29 @@ export default function AuthGate() {
       if (/[?&]code=/.test(url)) {
         setProcessing(true);
         try {
-          const { error } = await supabase.auth.exchangeCodeForSession(url);
+          const { data, error } = await supabase.auth.exchangeCodeForSession(url);
           const clean = window.location.origin + window.location.pathname;
           window.history.replaceState({}, '', clean);
           
           if (error) {
             console.error('Auth exchange error:', error.message);
-          } else {
-            window.location.href = '/dashboard';
+            setProcessing(false);
+            return;
+          }
+          
+          if (data.session) {
+            // Check if user needs onboarding
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('onboarding_completed')
+              .eq('id', data.session.user.id)
+              .single();
+            
+            if (!profile || !profile.onboarding_completed) {
+              window.location.href = '/onboarding';
+            } else {
+              window.location.href = '/dashboard';
+            }
             return;
           }
         } catch (e) {
@@ -74,7 +105,7 @@ export default function AuthGate() {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg)]">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-10 h-10 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-[var(--text-muted)]">Signing you in...</p>
         </div>
       </div>

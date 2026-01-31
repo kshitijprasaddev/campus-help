@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
 import ThemeToggle from './ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 
 type NavigationLink = { href: string; label: string; auth?: 'protected' | 'public' };
 
@@ -100,6 +101,7 @@ export default function NavBar() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-3 text-sm">
+          <LanguageSwitcher />
           <ThemeToggle />
           {displayName && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)]">
