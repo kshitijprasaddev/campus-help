@@ -51,6 +51,7 @@ export default function SignIn() {
       });
       
       if (authError) {
+        setLoading(false);
         if (authError.message.includes('Invalid login credentials')) {
           setError('Invalid email or password.');
         } else if (authError.message.includes('Email not confirmed')) {
@@ -62,13 +63,10 @@ export default function SignIn() {
       }
 
       setSuccess('Welcome back! Redirecting...');
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 800);
+      window.location.href = '/dashboard';
     } catch (err) {
       console.error('Sign in error:', err);
       setError('Something went wrong. Please try again.');
-    } finally {
       setLoading(false);
     }
   }
