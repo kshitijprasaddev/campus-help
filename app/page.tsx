@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import FeatureCards from '../components/FeatureCardsNew';
-import { Hero } from '../components/Hero';
+import SimpleHero from '../components/SimpleHero';
 import RequestCard from '../components/RequestCard';
 import SimpleCalendar from '../components/SimpleCalendar';
 import { supabase } from '../lib/supabaseClient';
@@ -109,7 +109,7 @@ export default function Home() {
   const isTutor = role === 'tutor';
   return (
     <div className="page-transition">
-      <Hero loggedIn={hasSession} />
+      <SimpleHero loggedIn={hasSession} />
       <FeatureCards />
       
       <SimpleCalendar />
