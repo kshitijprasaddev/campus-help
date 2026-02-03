@@ -34,11 +34,6 @@ export default function SignIn() {
 
   // Microsoft OAuth sign in (for THI students)
   async function handleMicrosoftSignIn() {
-    // Azure OAuth not yet configured - show message
-    setError('THI Outlook login coming soon! Please use email for now.');
-    return;
-    
-    /* Uncomment when Azure is configured in Supabase:
     setError(null);
     setLoading(true);
 
@@ -60,7 +55,6 @@ export default function SignIn() {
       setError('Failed to connect to Microsoft. Please try another method.');
       setLoading(false);
     }
-    */
   }
 
   // Password sign in

@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import FeatureCards from '../components/FeatureCardsNew';
+import FeatureCards from '../components/HowItWorks';
 import FloatingDots from '../components/FloatingDots';
 import ModernHero from '../components/ModernHero';
 import RequestCard from '../components/RequestCard';
