@@ -5,23 +5,23 @@ import { usePathname } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
-
-type NavigationLink = { href: string; label: string; auth?: 'protected' | 'public' };
-
-const NAV_LINKS: NavigationLink[] = [
-  { href: '/tutors', label: 'Tutors' },
-  { href: '/request/new', label: 'Post Request', auth: 'protected' },
-  { href: '/dashboard', label: 'Dashboard', auth: 'protected' },
-  { href: '/my', label: 'My Items', auth: 'protected' },
-  { href: '/profile', label: 'Profile', auth: 'protected' },
-];
+import { useI18n } from './I18nProvider';
 
 export default function NavBar() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const [email, setEmail] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const NAV_LINKS = useMemo(() => [
+    { href: '/tutors', label: t.nav.tutors },
+    { href: '/request/new', label: t.nav.postRequest, auth: 'protected' as const },
+    { href: '/dashboard', label: t.nav.dashboard, auth: 'protected' as const },
+    { href: '/my', label: t.nav.myItems, auth: 'protected' as const },
+    { href: '/profile', label: t.nav.profile, auth: 'protected' as const },
+  ], [t]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -65,10 +65,9 @@ export default function NavBar() {
     return NAV_LINKS.filter(link => {
       if (!link.auth) return true;
       if (link.auth === 'protected') return !!email;
-      if (link.auth === 'public') return !email;
       return true;
     });
-  }, [email]);
+  }, [email, NAV_LINKS]);
 
   function isActive(href: string) {
     if (href === '/') return pathname === '/';
@@ -112,11 +111,11 @@ export default function NavBar() {
             </div>
           )}
           {email ? (
-            <button onClick={signOut} className="btn-ghost">Sign out</button>
+            <button onClick={signOut} className="btn-ghost">{t.nav.signOut}</button>
           ) : (
             <>
-              <Link href="/signin" className="btn-ghost">Sign in</Link>
-              <Link href="/signup" className="btn">Get Started</Link>
+              <Link href="/signin" className="btn-ghost">{t.nav.signIn}</Link>
+              <Link href="/signup" className="btn">{t.nav.getStarted}</Link>
             </>
           )}
         </div>
@@ -158,15 +157,15 @@ export default function NavBar() {
             </nav>
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              {displayName && <span className="text-[var(--text-muted)] text-sm">Hi, {displayName.split(' ')[0]}</span>}
+              {displayName && <span className="text-[var(--text-muted)] text-sm">{t.common.hi}, {displayName.split(' ')[0]}</span>}
             </div>
             <div className="flex flex-col gap-2">
               {email ? (
-                <button onClick={signOut} className="btn-ghost">Sign out</button>
+                <button onClick={signOut} className="btn-ghost">{t.nav.signOut}</button>
               ) : (
                 <>
-                  <Link href="/signin" className="btn-ghost">Sign in</Link>
-                  <Link href="/signup" className="btn">Get Started</Link>
+                  <Link href="/signin" className="btn-ghost">{t.nav.signIn}</Link>
+                  <Link href="/signup" className="btn">{t.nav.getStarted}</Link>
                 </>
               )}
             </div>

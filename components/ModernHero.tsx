@@ -1,12 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useI18n } from './I18nProvider';
 
 type HeroProps = {
   loggedIn?: boolean;
 };
 
 export default function ModernHero({ loggedIn }: HeroProps) {
+  const { t } = useI18n();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--bg)]">
       {/* THI Royal Blue gradient background orbs */}
@@ -41,22 +44,22 @@ export default function ModernHero({ loggedIn }: HeroProps) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#003366] dark:bg-[#60a5fa] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#003366] dark:bg-[#60a5fa]"></span>
               </span>
-              <span className="text-sm font-medium text-[var(--text)]/80">Live at THI</span>
+              <span className="text-sm font-medium text-[var(--text)]/80">{t.hero.badge}</span>
               <span className="text-[var(--text)]/40">•</span>
-              <span className="text-sm text-[var(--text)]/60">500+ students</span>
+              <span className="text-sm text-[var(--text)]/60">500+ {t.hero.students}</span>
             </div>
           </div>
 
           {/* Main headline - big, clean typography */}
           <h1 className="text-[clamp(2.5rem,8vw,5.5rem)] font-semibold leading-[1.05] tracking-tight text-[var(--text)] mb-8">
-            Find your perfect
+            {t.hero.title}
             <br />
-            <span className="text-[var(--primary)]">campus tutor</span>
+            <span className="text-[var(--primary)]">{t.hero.titleHighlight}</span>
           </h1>
 
           {/* Subheadline - lighter, more breathing room */}
           <p className="text-[clamp(1.1rem,2.5vw,1.35rem)] leading-relaxed text-[var(--text)]/60 max-w-xl mb-14 font-normal">
-            Post what you need. Connect with verified tutors who respond in minutes—not days.
+            {t.hero.subtitle}
           </p>
 
           {/* CTA Buttons - THI Royal Blue theme */}
@@ -67,13 +70,13 @@ export default function ModernHero({ loggedIn }: HeroProps) {
                   href="/request/new" 
                   className="group px-8 py-4 rounded-2xl bg-[#003366] dark:bg-[#60a5fa] text-white dark:text-[#0a0f1a] font-medium text-base transition-all duration-300 hover:shadow-xl hover:shadow-[#003366]/20 hover:-translate-y-0.5"
                 >
-                  Post a Request
+                  {t.hero.ctaPost}
                 </Link>
                 <Link 
                   href="/tutors" 
                   className="px-8 py-4 rounded-2xl bg-[#003366]/5 dark:bg-white/[0.05] backdrop-blur-sm border border-[#003366]/20 dark:border-white/[0.1] text-[var(--text)] font-medium text-base transition-all duration-300 hover:bg-[#003366]/10 dark:hover:bg-white/[0.08]"
                 >
-                  Browse Tutors
+                  {t.hero.ctaBrowse}
                 </Link>
               </>
             ) : (
@@ -82,13 +85,13 @@ export default function ModernHero({ loggedIn }: HeroProps) {
                   href="/signup" 
                   className="group px-8 py-4 rounded-2xl bg-[#003366] dark:bg-[#60a5fa] text-white dark:text-[#0a0f1a] font-medium text-base transition-all duration-300 hover:shadow-xl hover:shadow-[#003366]/20 hover:-translate-y-0.5"
                 >
-                  Get Started — Free
+                  {t.hero.ctaStart}
                 </Link>
                 <Link 
                   href="/signin" 
                   className="px-8 py-4 rounded-2xl bg-[#003366]/5 dark:bg-white/[0.05] backdrop-blur-sm border border-[#003366]/20 dark:border-white/[0.1] text-[var(--text)] font-medium text-base transition-all duration-300 hover:bg-[#003366]/10 dark:hover:bg-white/[0.08]"
                 >
-                  Sign In
+                  {t.hero.ctaSignIn}
                 </Link>
               </>
             )}
@@ -97,14 +100,9 @@ export default function ModernHero({ loggedIn }: HeroProps) {
           {/* Stats - minimal, subtle */}
           <div className="flex items-center justify-center gap-12 sm:gap-16">
             {[
-              { value: '1,200+', label: 'Sessions' },
-              { value: '340', label: 'Tutors' },
-              { value: '~12m', label: 'Response' },
-            ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="text-2xl sm:text-3xl font-semibold text-[var(--text)] mb-1 tabular-nums">
-                  {stat.value}
-                </div>
+              { value: '1,200+', label: t.hero.statSessions },
+              { value: '340', label: t.hero.statTutors },
+              { value: '~12m', label: t.hero.statResponse },
                 <div className="text-xs sm:text-sm text-[var(--text)]/40 uppercase tracking-wider font-medium">
                   {stat.label}
                 </div>

@@ -1,27 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-
-type Language = 'en' | 'de';
+import { useI18n } from './I18nProvider';
 
 export default function LanguageSwitcher() {
-  const [language, setLanguageState] = useState<Language>('en');
+  const { language, setLanguage } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Load from localStorage
-    const stored = localStorage.getItem('language') as Language | null;
-    if (stored && (stored === 'en' || stored === 'de')) {
-      setLanguageState(stored);
-    } else {
-      // Check browser language
-      const browserLang = navigator.language.toLowerCase();
-      if (browserLang.startsWith('de')) {
-        setLanguageState('de');
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -33,17 +18,14 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem('language', lang);
+  const handleSetLanguage = (lang: 'en' | 'de') => {
+    setLanguage(lang);
     setOpen(false);
-    // Reload page to apply language change
-    window.location.reload();
   };
 
   const languages = [
-    { code: 'en' as Language, label: 'English', flag: '🇬🇧' },
-    { code: 'de' as Language, label: 'Deutsch', flag: '🇩🇪' },
+    { code: 'en' as const, label: 'English', flag: '🇬🇧' },
+    { code: 'de' as const, label: 'Deutsch', flag: '🇩🇪' },
   ];
 
   const current = languages.find(l => l.code === language) || languages[0];
@@ -72,12 +54,25 @@ export default function LanguageSwitcher() {
           {languages.map((lang) => (
             <button
               key={lang.code}
-              onClick={() => setLanguage(lang.code)}
+              onClick={() => handleSetLanguage(lang.code)}
               className={`w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-[var(--bg-tertiary)] transition-colors ${
                 language === lang.code ? 'text-[var(--primary)]' : 'text-[var(--text)]'
               }`}
             >
               <span>{lang.flag}</span>
+              <span>{lang.label}</span>
+              {language === lang.code && (
+                <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
               <span>{lang.label}</span>
               {language === lang.code && (
                 <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20">

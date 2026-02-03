@@ -101,6 +101,7 @@ export const translations = {
       confirm: 'Confirm',
       yes: 'Yes',
       no: 'No',
+      hi: 'Hi',
     },
   },
   de: {
@@ -202,6 +203,7 @@ export const translations = {
       confirm: 'Bestätigen',
       yes: 'Ja',
       no: 'Nein',
+      hi: 'Hallo',
     },
   },
 } as const;
