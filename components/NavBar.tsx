@@ -76,15 +76,15 @@ export default function NavBar() {
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[var(--bg)]/95 backdrop-blur-xl border-b border-[var(--border)] shadow-sm' : 'bg-transparent'}`}>
-      <div className="container flex h-[72px] items-center justify-between gap-4">
-        <Link href="/" className="group flex items-center gap-3 font-semibold tracking-tight">
-          <span className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl bg-thi-blue dark:bg-[var(--primary)] text-white transition-all duration-300 group-hover:scale-110">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <div className="container flex h-16 sm:h-[72px] items-center justify-between gap-4">
+        <Link href="/" className="group flex items-center gap-2 sm:gap-3 font-semibold tracking-tight">
+          <span className="relative inline-flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-thi-blue dark:bg-[var(--primary)] text-white transition-all duration-300 group-hover:scale-110">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden className="sm:w-5 sm:h-5">
               <path d="M4 9.5L12 4L20 9.5V19.5C20 20.0523 19.5523 20.5 19 20.5H5C4.44772 20.5 4 20.0523 4 19.5V9.5Z" stroke="currentColor" strokeWidth="1.6" />
               <path d="M9 20.5V13.5H15V20.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </span>
-          <span className="font-bold text-lg">Campus Help</span>
+          <span className="font-bold text-base sm:text-lg">Campus Help</span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">

@@ -157,15 +157,15 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] py-12 px-4">
+    <div className="min-h-[100dvh] bg-[var(--bg)] py-8 sm:py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Progress bar */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-[var(--text-muted)]">Step {step} of 4</span>
-            <span className="text-sm text-[var(--text-muted)]">{Math.round((step / 4) * 100)}%</span>
+            <span className="text-xs sm:text-sm text-[var(--text-muted)]">Step {step} of 4</span>
+            <span className="text-xs sm:text-sm text-[var(--text-muted)]">{Math.round((step / 4) * 100)}%</span>
           </div>
-          <div className="h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
+          <div className="h-1.5 sm:h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden">
             <div 
               className="h-full bg-[var(--primary)] transition-all duration-300"
               style={{ width: `${(step / 4) * 100}%` }}
@@ -175,60 +175,60 @@ export default function OnboardingPage() {
 
         {/* Step 1: User Type */}
         {step === 1 && (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-[var(--text)] mb-2">Welcome to Campus Help! 👋</h1>
-              <p className="text-[var(--text-muted)]">What brings you here?</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text)] mb-2">Welcome to Campus Help! 👋</h1>
+              <p className="text-sm sm:text-base text-[var(--text-muted)]">What brings you here?</p>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid gap-3 sm:gap-4">
               <button
                 onClick={() => setUserType('learner')}
-                className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 text-left transition-all active:scale-[0.98] ${
                   userType === 'learner' 
                     ? 'border-[var(--primary)] bg-[var(--primary)]/5' 
                     : 'border-[var(--border)] hover:border-[var(--primary)]/50'
                 }`}
               >
-                <div className="flex items-start gap-4">
-                  <span className="text-3xl">📚</span>
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <span className="text-2xl sm:text-3xl">📚</span>
                   <div>
-                    <h3 className="font-semibold text-[var(--text)] mb-1">I want to learn</h3>
-                    <p className="text-sm text-[var(--text-muted)]">Find tutors and get help with your courses</p>
+                    <h3 className="font-semibold text-[var(--text)] text-sm sm:text-base mb-0.5 sm:mb-1">I want to learn</h3>
+                    <p className="text-xs sm:text-sm text-[var(--text-muted)]">Find tutors and get help with your courses</p>
                   </div>
                 </div>
               </button>
 
               <button
                 onClick={() => setUserType('tutor')}
-                className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 text-left transition-all active:scale-[0.98] ${
                   userType === 'tutor' 
                     ? 'border-[var(--primary)] bg-[var(--primary)]/5' 
                     : 'border-[var(--border)] hover:border-[var(--primary)]/50'
                 }`}
               >
-                <div className="flex items-start gap-4">
-                  <span className="text-3xl">🎓</span>
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <span className="text-2xl sm:text-3xl">🎓</span>
                   <div>
-                    <h3 className="font-semibold text-[var(--text)] mb-1">I want to tutor</h3>
-                    <p className="text-sm text-[var(--text-muted)]">Help other students and earn money</p>
+                    <h3 className="font-semibold text-[var(--text)] text-sm sm:text-base mb-0.5 sm:mb-1">I want to tutor</h3>
+                    <p className="text-xs sm:text-sm text-[var(--text-muted)]">Help other students and earn money</p>
                   </div>
                 </div>
               </button>
 
               <button
                 onClick={() => setUserType('both')}
-                className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 text-left transition-all active:scale-[0.98] ${
                   userType === 'both' 
                     ? 'border-[var(--primary)] bg-[var(--primary)]/5' 
                     : 'border-[var(--border)] hover:border-[var(--primary)]/50'
                 }`}
               >
-                <div className="flex items-start gap-4">
-                  <span className="text-3xl">🔄</span>
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <span className="text-2xl sm:text-3xl">🔄</span>
                   <div>
-                    <h3 className="font-semibold text-[var(--text)] mb-1">Both</h3>
-                    <p className="text-sm text-[var(--text-muted)]">Learn some subjects, tutor others</p>
+                    <h3 className="font-semibold text-[var(--text)] text-sm sm:text-base mb-0.5 sm:mb-1">Both</h3>
+                    <p className="text-xs sm:text-sm text-[var(--text-muted)]">Learn some subjects, tutor others</p>
                   </div>
                 </div>
               </button>
@@ -238,13 +238,13 @@ export default function OnboardingPage() {
 
         {/* Step 2: Personal Info */}
         {step === 2 && (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-[var(--text)] mb-2">Tell us about yourself</h1>
-              <p className="text-[var(--text-muted)]">This will be shown on your profile</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text)] mb-2">Tell us about yourself</h1>
+              <p className="text-sm sm:text-base text-[var(--text-muted)]">This will be shown on your profile</p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label className="block text-sm font-medium text-[var(--text)] mb-2">
                   Full Name *
@@ -273,8 +273,8 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              <div className="p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20">
-                <p className="text-sm text-[var(--text-muted)]">
+              <div className="p-3 sm:p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20">
+                <p className="text-xs sm:text-sm text-[var(--text-muted)]">
                   <span className="font-medium text-[var(--text)]">Email:</span> {email}
                 </p>
               </div>
@@ -284,13 +284,13 @@ export default function OnboardingPage() {
 
         {/* Step 3: University Info */}
         {step === 3 && (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-[var(--text)] mb-2">Where do you study?</h1>
-              <p className="text-[var(--text-muted)]">Select your university and program</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text)] mb-2">Where do you study?</h1>
+              <p className="text-sm sm:text-base text-[var(--text-muted)]">Select your university and program</p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label className="block text-sm font-medium text-[var(--text)] mb-2">
                   University
@@ -344,20 +344,20 @@ export default function OnboardingPage() {
 
         {/* Step 4: Verification */}
         {step === 4 && (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-[var(--text)] mb-2">Verify your identity</h1>
-              <p className="text-[var(--text-muted)]">Verified students get a badge and more trust</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text)] mb-2">Verify your identity</h1>
+              <p className="text-sm sm:text-base text-[var(--text-muted)]">Verified students get a badge and more trust</p>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid gap-3 sm:gap-4">
               {email.endsWith('@thi.de') ? (
-                <div className="p-6 rounded-2xl border-2 border-green-500 bg-green-500/5">
-                  <div className="flex items-start gap-4">
-                    <span className="text-3xl">✅</span>
+                <div className="p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 border-green-500 bg-green-500/5">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <span className="text-2xl sm:text-3xl">✅</span>
                     <div>
-                      <h3 className="font-semibold text-[var(--text)] mb-1">Already Verified!</h3>
-                      <p className="text-sm text-[var(--text-muted)]">
+                      <h3 className="font-semibold text-[var(--text)] text-sm sm:text-base mb-0.5 sm:mb-1">Already Verified!</h3>
+                      <p className="text-xs sm:text-sm text-[var(--text-muted)]">
                         Your @thi.de email confirms you&apos;re a THI student
                       </p>
                     </div>
@@ -366,38 +366,18 @@ export default function OnboardingPage() {
               ) : (
                 <>
                   <button
-                    onClick={() => setVerificationMethod('outlook')}
-                    className={`p-6 rounded-2xl border-2 text-left transition-all ${
-                      verificationMethod === 'outlook' 
-                        ? 'border-[var(--primary)] bg-[var(--primary)]/5' 
-                        : 'border-[var(--border)] hover:border-[var(--primary)]/50'
-                    }`}
-                  >
-                    <div className="flex items-start gap-4">
-                      <span className="text-3xl">📧</span>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-[var(--text)]">THI Outlook Login</h3>
-                          <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/10 text-green-600">Recommended</span>
-                        </div>
-                        <p className="text-sm text-[var(--text-muted)]">Sign in with your @thi.de email</p>
-                      </div>
-                    </div>
-                  </button>
-
-                  <button
                     onClick={() => setVerificationMethod('student_id')}
-                    className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                    className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 text-left transition-all active:scale-[0.98] ${
                       verificationMethod === 'student_id' 
                         ? 'border-[var(--primary)] bg-[var(--primary)]/5' 
                         : 'border-[var(--border)] hover:border-[var(--primary)]/50'
                     }`}
                   >
-                    <div className="flex items-start gap-4">
-                      <span className="text-3xl">🪪</span>
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <span className="text-2xl sm:text-3xl">🪪</span>
                       <div>
-                        <h3 className="font-semibold text-[var(--text)] mb-1">Student ID</h3>
-                        <p className="text-sm text-[var(--text-muted)]">Upload a photo of your student ID (manual review)</p>
+                        <h3 className="font-semibold text-[var(--text)] text-sm sm:text-base mb-0.5 sm:mb-1">Student ID</h3>
+                        <p className="text-xs sm:text-sm text-[var(--text-muted)]">Upload a photo of your student ID (manual review)</p>
                       </div>
                     </div>
                   </button>
@@ -406,18 +386,18 @@ export default function OnboardingPage() {
 
               <button
                 onClick={() => setVerificationMethod('skip')}
-                className={`p-4 rounded-xl border text-center transition-all ${
+                className={`p-3 sm:p-4 rounded-xl border text-center transition-all active:scale-[0.98] ${
                   verificationMethod === 'skip' 
                     ? 'border-[var(--primary)] bg-[var(--primary)]/5' 
                     : 'border-[var(--border)] hover:border-[var(--border)]'
                 }`}
               >
-                <p className="text-sm text-[var(--text-muted)]">Skip for now — verify later</p>
+                <p className="text-xs sm:text-sm text-[var(--text-muted)]">Skip for now — verify later</p>
               </button>
             </div>
 
             {!email.endsWith('@thi.de') && (
-              <p className="text-xs text-center text-[var(--text-muted)]">
+              <p className="text-[10px] sm:text-xs text-center text-[var(--text-muted)]">
                 💡 Tip: Sign up with your @thi.de email for instant verification
               </p>
             )}
@@ -425,11 +405,11 @@ export default function OnboardingPage() {
         )}
 
         {/* Navigation buttons */}
-        <div className="flex items-center justify-between mt-12">
+        <div className="flex items-center justify-between mt-8 sm:mt-12">
           {step > 1 ? (
             <button
               onClick={() => setStep(step - 1)}
-              className="btn-ghost"
+              className="btn-ghost text-sm sm:text-base"
             >
               ← Back
             </button>
@@ -441,7 +421,7 @@ export default function OnboardingPage() {
             <button
               onClick={() => setStep(step + 1)}
               disabled={!canProceed()}
-              className="btn disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               Next →
             </button>
@@ -449,7 +429,7 @@ export default function OnboardingPage() {
             <button
               onClick={handleComplete}
               disabled={saving}
-              className="btn disabled:opacity-50"
+              className="btn disabled:opacity-50 text-sm sm:text-base"
             >
               {saving ? 'Setting up...' : 'Complete Setup ✓'}
             </button>

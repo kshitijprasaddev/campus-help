@@ -126,41 +126,41 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="container space-y-8">
+    <div className="container space-y-6 sm:space-y-8 py-4 sm:py-0">
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="card p-6 md:p-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="card p-5 sm:p-6 md:p-8">
+          <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="tag">Signed in as</div>
-              <h1 className="mt-2 text-2xl font-semibold">{email || '—'}</h1>
-              <p className="mt-2 text-sm text-[var(--text-muted)]">
-                Keep track of your open requests, bids, and replies from classmates in one workspace.
+              <div className="tag text-xs">Signed in as</div>
+              <h1 className="mt-2 text-xl sm:text-2xl font-semibold break-all">{email || '—'}</h1>
+              <p className="mt-2 text-xs sm:text-sm text-[var(--text-muted)]">
+                Keep track of your open requests, bids, and replies from classmates.
               </p>
             </div>
           </div>
-          <div className="mt-6 flex flex-wrap gap-3 text-sm">
-            <Link className="btn" href="/request/new">Post a request</Link>
-            <Link className="btn-ghost" href="/my">My items</Link>
-            <Link className="btn-ghost" href="/tutors">Browse tutors</Link>
+          <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 text-sm">
+            <Link className="btn text-center" href="/request/new">Post a request</Link>
+            <Link className="btn-ghost text-center" href="/my">My items</Link>
+            <Link className="btn-ghost text-center" href="/tutors">Browse tutors</Link>
           </div>
         </div>
 
-        <div className="card p-6 md:p-8">
+        <div className="card p-5 sm:p-6 md:p-8">
           <div className="flex items-start justify-between">
             <div>
-              <div className="tag">Snapshot</div>
-              <h2 className="mt-2 text-lg font-semibold">Request performance</h2>
+              <div className="tag text-xs">Snapshot</div>
+              <h2 className="mt-2 text-base sm:text-lg font-semibold">Request performance</h2>
             </div>
             <Link href="/request/new" className="btn-ghost text-xs">Create new</Link>
           </div>
-          <div className="mt-6 grid gap-4">
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-tertiary)] px-5 py-4">
-              <div className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">Open requests</div>
-              <div className="mt-2 text-2xl font-semibold">{openRequests}</div>
+          <div className="mt-5 sm:mt-6 grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-4">
+            <div className="rounded-xl sm:rounded-2xl border border-[var(--border)] bg-[var(--bg-tertiary)] px-4 sm:px-5 py-3 sm:py-4">
+              <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[var(--text-muted)]">Open</div>
+              <div className="mt-1 sm:mt-2 text-xl sm:text-2xl font-semibold">{openRequests}</div>
             </div>
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-tertiary)] px-5 py-4">
-              <div className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">Closed requests</div>
-              <div className="mt-2 text-2xl font-semibold">{closedRequests}</div>
+            <div className="rounded-xl sm:rounded-2xl border border-[var(--border)] bg-[var(--bg-tertiary)] px-4 sm:px-5 py-3 sm:py-4">
+              <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[var(--text-muted)]">Closed</div>
+              <div className="mt-1 sm:mt-2 text-xl sm:text-2xl font-semibold">{closedRequests}</div>
             </div>
           </div>
         </div>
@@ -193,22 +193,22 @@ export default function DashboardPage() {
         )}
 
         {!loading && !error && myRequests.length > 0 && (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
             {myRequests.map(req => (
               <Link
                 key={req.id}
                 href={`/request/${req.id}`}
-                className="card group p-5 transition-all hover:-translate-y-1 hover:border-thi-blue/40 dark:hover:border-[var(--primary)]/40"
+                className="card group p-4 sm:p-5 transition-all hover:-translate-y-1 hover:border-thi-blue/40 dark:hover:border-[var(--primary)]/40"
               >
-                <div className="flex items-center justify-between">
-                  <div className="text-base font-semibold">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="text-sm sm:text-base font-semibold line-clamp-1">
                     {req.title} <span className="text-[var(--text-muted)]">· {req.course}</span>
                   </div>
-                  <span className={`rounded-full px-2 py-1 text-xs font-medium uppercase tracking-[0.25em] ${req.status === 'closed' ? 'bg-red-500/10 text-red-500 dark:text-red-400' : 'bg-green-500/10 text-green-600 dark:text-green-400'}`}>
+                  <span className={`self-start rounded-full px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium uppercase tracking-[0.15em] sm:tracking-[0.25em] ${req.status === 'closed' ? 'bg-red-500/10 text-red-500 dark:text-red-400' : 'bg-green-500/10 text-green-600 dark:text-green-400'}`}>
                     {req.status}
                   </span>
                 </div>
-                <div className="mt-2 text-xs text-[var(--text-muted)]">{new Date(req.created_at).toLocaleString()}</div>
+                <div className="mt-2 text-[10px] sm:text-xs text-[var(--text-muted)]">{new Date(req.created_at).toLocaleString()}</div>
               </Link>
             ))}
           </div>

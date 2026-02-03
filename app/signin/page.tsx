@@ -203,27 +203,27 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-[100dvh] flex items-center justify-center px-4 py-8 sm:py-12 bg-[var(--bg)]">
       <div className="w-full max-w-md">
-        <div className="card p-8 space-y-6 animate-fade-in-up">
+        <div className="card p-6 sm:p-8 space-y-5 sm:space-y-6 animate-fade-in-up">
           {/* Header */}
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-thi-blue/10 dark:bg-[var(--primary)]/10 mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-thi-blue/10 dark:bg-[var(--primary)]/10 mb-3 sm:mb-4">
               {step === 'verify' ? (
-                <span className="text-3xl">📧</span>
+                <span className="text-2xl sm:text-3xl">📧</span>
               ) : (
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-thi-blue dark:text-[var(--primary)]">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-thi-blue dark:text-[var(--primary)] sm:w-7 sm:h-7">
                   <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
                 </svg>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-[var(--text)]">
+            <h1 className="text-xl sm:text-2xl font-bold text-[var(--text)]">
               {step === 'method' && 'Welcome back'}
               {step === 'email' && 'Sign in with email'}
               {step === 'verify' && 'Check your inbox'}
             </h1>
-            <p className="text-[var(--text-muted)]">
+            <p className="text-sm sm:text-base text-[var(--text-muted)]">
               {step === 'method' && 'Sign in to your Campus Help account'}
               {step === 'email' && 'Enter your email to continue'}
               {step === 'verify' && `We sent a code to ${email}`}
@@ -233,35 +233,10 @@ export default function SignIn() {
           {/* Step: Choose Method */}
           {step === 'method' && (
             <div className="space-y-4">
-              {/* THI Students - Microsoft */}
-              <button
-                onClick={handleMicrosoftSignIn}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-xl bg-[#0078D4] text-white font-medium hover:bg-[#106EBE] transition-colors disabled:opacity-50"
-              >
-                <svg width="20" height="20" viewBox="0 0 21 21" fill="currentColor">
-                  <path d="M0 0h10v10H0V0zm11 0h10v10H11V0zM0 11h10v10H0V11zm11 0h10v10H11V11z"/>
-                </svg>
-                {loading ? 'Connecting...' : 'Continue with THI Outlook'}
-              </button>
-
-              <p className="text-center text-xs text-[var(--text-muted)]">
-                🎓 Recommended for THI students
-              </p>
-
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-[var(--border)]"></div>
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-[var(--card)] px-4 text-[var(--text-muted)]">or</span>
-                </div>
-              </div>
-
-              {/* Email option */}
+              {/* Email option - Primary */}
               <button
                 onClick={() => setStep('email')}
-                className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text)] font-medium hover:bg-[var(--bg-tertiary)] transition-colors"
+                className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-xl bg-[var(--primary)] text-white font-medium hover:opacity-90 transition-all active:scale-[0.98]"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -269,6 +244,10 @@ export default function SignIn() {
                 </svg>
                 Continue with Email
               </button>
+
+              <p className="text-center text-xs text-[var(--text-muted)]">
+                ✨ Use your @thi.de email for automatic verification
+              </p>
 
               {error && (
                 <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm">
