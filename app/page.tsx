@@ -8,6 +8,7 @@ import RequestCard from '../components/RequestCard';
 import SimpleCalendar from '../components/SimpleCalendar';
 import { supabase } from '../lib/supabaseClient';
 import { useRoleTheme } from '../components/RoleThemeProvider';
+import { useI18n } from '../components/I18nProvider';
 
 type Req = {
   id: string;
@@ -24,6 +25,7 @@ const REQUEST_LIMIT = 12;
 
 export default function Home() {
   const { role, profile } = useRoleTheme();
+  const { t } = useI18n();
   const [requests, setRequests] = useState<Req[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,24 +121,24 @@ export default function Home() {
       <section className="container space-y-6 py-16">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-[var(--text)]">Latest requests</h2>
-            <p className="text-sm text-[var(--text-muted)]">Browse recent tutoring requests from students.</p>
+            <h2 className="text-2xl font-semibold tracking-tight text-[var(--text)]">{t.home.latestRequests}</h2>
+            <p className="text-sm text-[var(--text-muted)]">{t.home.latestRequestsDesc}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            {!isTutor && <Link href="/request/new" className="btn-ghost">Create request</Link>}
+            {!isTutor && <Link href="/request/new" className="btn-ghost">{t.home.createRequest}</Link>}
           </div>
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
           <input
             className="input md:max-w-sm"
-            placeholder="Filter by course or title…"
+            placeholder={t.home.filterPlaceholder}
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
           <div className="flex items-center gap-2">
             {query && (
               <button className="btn-ghost" onClick={() => setQuery('')}>
-                Clear filter
+                {t.home.clearFilter}
               </button>
             )}
             {isTutor && (
@@ -146,9 +148,9 @@ export default function Home() {
                 onChange={event => setSort(event.target.value as typeof sort)}
                 aria-label="Sort requests"
               >
-                <option value="newest">Newest first</option>
-                <option value="budget">Highest offer</option>
-                <option value="course">Course A–Z</option>
+                <option value="newest">{t.home.newestFirst}</option>
+                <option value="budget">{t.home.highestOffer}</option>
+                <option value="course">{t.home.courseAZ}</option>
               </select>
             )}
           </div>
@@ -187,7 +189,7 @@ export default function Home() {
               ))
             ) : (
               <div className="card p-6 text-sm text-[var(--text-muted)]">
-                No requests match that filter yet. {query ? 'Try a broader course keyword.' : 'Be the first to post a request today!'}
+                {t.home.noRequestsFilter} {query ? t.home.tryBroader : t.home.beFirst}
               </div>
             )}
           </div>
@@ -195,7 +197,7 @@ export default function Home() {
 
         {!loading && !error && hasResults && sorted.length >= REQUEST_LIMIT && (
           <div className="text-center text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">
-            Showing the newest {REQUEST_LIMIT} requests
+            {t.home.showingNewest} {REQUEST_LIMIT} {t.home.requests}
           </div>
         )}
       </section>
@@ -203,22 +205,22 @@ export default function Home() {
       <section className="container pb-16">
         <div className="card flex flex-col gap-6 px-8 py-9 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <div className="tag">Next steps</div>
-            <h3 className="text-2xl font-semibold text-[var(--text)]">{hasSession ? 'Keep momentum on your studies.' : 'Ready to get started?'}</h3>
+            <div className="tag">{t.home.nextSteps}</div>
+            <h3 className="text-2xl font-semibold text-[var(--text)]">{hasSession ? t.home.keepMomentum : t.home.readyToStart}</h3>
             <p className="text-sm text-[var(--text-muted)] md:max-w-xl">
-              Post what you need, set your budget, and connect with verified tutors who respond instantly.
+              {t.home.ctaDesc}
             </p>
           </div>
           <div className="flex flex-col gap-3 md:min-w-[220px]">
             {hasSession ? (
               <>
-                {!isTutor && <Link href="/request/new" className="btn">Post another request</Link>}
-                <Link href="/dashboard" className="btn-ghost">Open dashboard</Link>
+                {!isTutor && <Link href="/request/new" className="btn">{t.home.postAnother}</Link>}
+                <Link href="/dashboard" className="btn-ghost">{t.home.openDashboard}</Link>
               </>
             ) : (
               <>
-                <Link href="/signup" className="btn">Create free account</Link>
-                <Link href="/signin" className="btn-ghost">I already have an account</Link>
+                <Link href="/signup" className="btn">{t.home.createFreeAccount}</Link>
+                <Link href="/signin" className="btn-ghost">{t.home.alreadyHaveAccount}</Link>
               </>
             )}
           </div>

@@ -1,24 +1,28 @@
 "use client";
 
-const features = [
-  {
-    title: 'Post a request',
-    desc: 'Describe what you need help with and set your budget.',
-    icon: '📝',
-  },
-  {
-    title: 'Get matched',
-    desc: 'Verified tutors respond with availability and rates.',
-    icon: '🎯',
-  },
-  {
-    title: 'Start learning',
-    desc: 'Pick your tutor and schedule your session.',
-    icon: '🚀',
-  },
-];
+import { useI18n } from './I18nProvider';
 
 export default function FeatureCards() {
+  const { t } = useI18n();
+
+  const features = [
+    {
+      title: t.features.step1Title,
+      desc: t.features.step1Desc,
+      icon: '📝',
+    },
+    {
+      title: t.features.step2Title,
+      desc: t.features.step2Desc,
+      icon: '🎯',
+    },
+    {
+      title: t.features.step3Title,
+      desc: t.features.step3Desc,
+      icon: '🚀',
+    },
+  ];
+
   return (
     <section className="relative py-24 lg:py-32">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -26,10 +30,10 @@ export default function FeatureCards() {
         {/* Section header - clean, centered */}
         <div className="text-center mb-16 lg:mb-20">
           <p className="text-sm font-medium text-[var(--primary)] uppercase tracking-widest mb-4">
-            How it works
+            {t.features.eyebrow}
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[var(--text)] tracking-tight">
-            Three simple steps
+            {t.features.title}
           </h2>
         </div>
 
@@ -37,7 +41,7 @@ export default function FeatureCards() {
         <div className="grid gap-8 md:grid-cols-3">
           {features.map((feature, index) => (
             <div
-              key={feature.title}
+              key={index}
               className="group relative p-8 lg:p-10 rounded-3xl bg-[var(--card)] border border-[var(--border)] shadow-sm hover:shadow-xl hover:shadow-black/5 transition-all duration-500 hover:-translate-y-1"
             >
               {/* Step number - subtle */}
