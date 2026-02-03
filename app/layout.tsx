@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import AuthGate from '../components/AuthGate';
 import { RoleThemeProvider } from '../components/RoleThemeProvider';
+import { I18nProvider } from '../components/I18nProvider';
 
 export const metadata: Metadata = { 
   title: 'Campus Help | Find Your Perfect Tutor',
@@ -33,14 +34,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
       </head>
       <body suppressHydrationWarning className="antialiased">
-        <RoleThemeProvider>
-          <div className="relative min-h-dvh flex flex-col">
-            <ClientOnly><AuthGate /></ClientOnly>
-            <ClientOnly><NavBar /></ClientOnly>
-            <main className="flex-1 pt-24 pb-20">{children}</main>
-            <ClientOnly><Footer /></ClientOnly>
-          </div>
-        </RoleThemeProvider>
+        <ClientOnly>
+          <I18nProvider>
+            <RoleThemeProvider>
+              <div className="relative min-h-dvh flex flex-col">
+                <AuthGate />
+                <NavBar />
+                <main className="flex-1 pt-24 pb-20">{children}</main>
+                <Footer />
+              </div>
+            </RoleThemeProvider>
+          </I18nProvider>
+        </ClientOnly>
       </body>
     </html>
   );

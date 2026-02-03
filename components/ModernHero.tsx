@@ -10,6 +10,12 @@ type HeroProps = {
 export default function ModernHero({ loggedIn }: HeroProps) {
   const { t } = useI18n();
 
+  const stats = [
+    { value: '1,200+', label: t.hero.statSessions },
+    { value: '340', label: t.hero.statTutors },
+    { value: '~12m', label: t.hero.statResponse },
+  ];
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--bg)]">
       {/* THI Royal Blue gradient background orbs */}
@@ -99,10 +105,11 @@ export default function ModernHero({ loggedIn }: HeroProps) {
 
           {/* Stats - minimal, subtle */}
           <div className="flex items-center justify-center gap-12 sm:gap-16">
-            {[
-              { value: '1,200+', label: t.hero.statSessions },
-              { value: '340', label: t.hero.statTutors },
-              { value: '~12m', label: t.hero.statResponse },
+            {stats.map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl sm:text-3xl font-semibold text-[var(--text)] mb-1 tabular-nums">
+                  {stat.value}
+                </div>
                 <div className="text-xs sm:text-sm text-[var(--text)]/40 uppercase tracking-wider font-medium">
                   {stat.label}
                 </div>
